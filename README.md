@@ -1,6 +1,8 @@
-# Hermod
+![Hermód](logo.svg)
 
-Hermod adds mail sending capability to your static sites (e.g. "Contact us" forms).
+# Hermód
+
+Hermód adds mail sending capability to your static sites (e.g. "Contact us" forms).
 
 It's privacy-aware, protecting your email address from eavesdropper without any account creation.
 
