@@ -1,4 +1,4 @@
-![Hermód](logo.svg)
+![Hermód](logo.png)
 
 # Hermód
 
