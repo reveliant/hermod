@@ -23,9 +23,9 @@ $ openssl rand -base64 16 > hermod_hmac.key
 $ chmod go-rwx hermod_aes.key hermod_hmac.key
 ```
 
-That key will be used:
- * to encrypt destination email address, avoiding eavesdropper and spam;
- * to sign (HMAC) critical fields, avoiding insecure redirection after submission.
+Those keys will be used:
+ * to encrypt with AES-128 destination email address, avoiding eavesdropper and spam;
+ * to sign (HMAC SHA-256) critical fields, avoiding insecure redirection after submission.
 
 ### Heroku setup
 
