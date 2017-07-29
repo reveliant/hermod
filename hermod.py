@@ -100,7 +100,7 @@ class SignConfig(object):
         """
         message = ('address:%s\nredirect:%s' % (self.address, self.url)).encode('ascii')
         hmac = HMAC.new(self.__key, msg=message, digestmod=SHA256)
-        return hmac.hexdigest()
+        return urlsafe_b64encode(hmac.digest()).decode('utf-8')
 
 def main():
     """
