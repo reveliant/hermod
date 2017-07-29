@@ -16,7 +16,7 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 
 ### Prerequisite
 
-Create two 128-keys for AES and HMAC (and keep them secrets!):
+Create two 128-bits keys for AES and HMAC (and keep them secrets!):
 ```Shell
 $ openssl rand -base64 16 > hermod.key
 $ openssl rand -base64 16 >> hermod.key
