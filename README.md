@@ -16,9 +16,10 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 
 ### Prerequisite
 
-Create an AES-128 key (and keep it secret!):
+Create two 128-keys for AES and HMAC (and keep them secrets!):
 ```Shell
 $ openssl rand -base64 16 > hermod.key
+$ openssl rand -base64 16 >> hermod.key
 $ chmod go-rwx hermod.key
 ```
 
@@ -61,7 +62,7 @@ $ python hermod-daemon.py PORT
 ```Shell
 $ ./hermod.py -k hermod.key -m contact-me@domain.com -r http://domain.com/gotothispageaftersubmition
 Set the API endpoint to the following value:
-<api root>/rax6y9io-dV9-OD_g9sB22e7/e259e919c742fb6381925c148cb1cacc665f5f7626645fde003c98b79c315fe8
+<api root>/prxLO0-KjmQ=/mqtKse1evfpsi3PBERGosRPc/2v0TQlGQRAT_OYMafyJIN2zUV8YsBYObQRJp_HGTHrI=
 ```
 
 3. Set the target URL on your form to point your instance with the token, and set the "redirect" field, e.g.:

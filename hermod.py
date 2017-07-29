@@ -73,7 +73,9 @@ class SignConfig(object):
             check = False
         else:
             with open(self.key, mode='rb') as keyfile:
-                self.__key = b64decode(keyfile.read())
+                self.__aes_key = b64decode(keyfile.read(24))
+                keyfile.read(2) # Consume \r\n
+                self.__hmac_key = b64decode(keyfile.read(24))
 
         if self.address is None:
             print('Missing mail address')
@@ -86,6 +88,9 @@ class SignConfig(object):
         return check
     
     def create_iv(self):
+        """
+        Generate cryptographic secure pseudo-random number (CSPRN) for initialisation verctor
+        """
         iv = Random.get_random_bytes(8)
         return urlsafe_b64encode(iv).decode('utf-8')
 
@@ -95,7 +100,7 @@ class SignConfig(object):
         """
         message = self.address.encode('ascii')
         ctr = Counter.new(64, prefix=urlsafe_b64decode(iv))
-        cipher = AES.new(self.__key, AES.MODE_CTR, counter=ctr)
+        cipher = AES.new(self.__aes_key, AES.MODE_CTR, counter=ctr)
         ciphertext = cipher.encrypt(message)
         return urlsafe_b64encode(ciphertext).decode('utf-8')
 
@@ -104,7 +109,7 @@ class SignConfig(object):
         Sign email address and redirect-URL with key
         """
         message = ('address:%s\nredirect:%s' % (self.address, self.url)).encode('ascii')
-        hmac = HMAC.new(self.__key, msg=message, digestmod=SHA256)
+        hmac = HMAC.new(self.__hmac_key, msg=message, digestmod=SHA256)
         return urlsafe_b64encode(hmac.digest()).decode('utf-8')
 
 def main():
