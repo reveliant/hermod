@@ -18,9 +18,9 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 
 Create two 128-bits keys for AES and HMAC (and keep them secrets!):
 ```Shell
-$ openssl rand -base64 16 > hermod.key
-$ openssl rand -base64 16 >> hermod.key
-$ chmod go-rwx hermod.key
+$ openssl rand -base64 16 > hermod_aes.key
+$ openssl rand -base64 16 > hermod_hmac.key
+$ chmod go-rwx hermod_aes.key hermod_hmac.key
 ```
 
 That key will be used:
@@ -41,7 +41,8 @@ That key will be used:
 $ pip install -r requirements.txt
 ```
 4. Set environment variables:
-  * `HERMOD_KEY` with the previously generated AES key,
+  * `HERMOD_AES_KEY` with the previously generated AES key,
+  * `HERMOD_HMAC_KEY` with the previously generated HMAC key,
   * `MAILGUN_SMTP_LOGIN`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_SMTP_SERVER` and `MAILGUN_SMTP_PORT` with appropriate parameters for your SMTP server,
   * Note that `MAILGUN` is kept on variables names to speed up setting of Heroku instance; you don't actually need to use Mailgun services at all.
 5. Start server:
@@ -54,13 +55,14 @@ $ python hermod-daemon.py PORT
 1. If you haven't already, copy `hermod.py` localy and make it executable
 
 2. Compute endpoint token with `hermod.py` utility :
-  * previously generated AES key (`-k|--key`)
+  * previously generated AES key (`-a|--aes-key`)
+  * previously generated HMAC key (`-k|--hmac-key`)
   * destination email address (`-m|--mail`)
   * URL to redirect to after submission (`-r|--redirect`):
   
   e.g.:
 ```Shell
-$ ./hermod.py -k hermod.key -m contact-me@domain.com -r http://domain.com/gotothispageaftersubmition
+$ ./hermod.py -a hermod_aes.key -k hermod_hmac.key -m contact-me@domain.com -r http://domain.com/gotothispageaftersubmition
 Set the API endpoint to the following value:
 <api root>/prxLO0-KjmQ=/mqtKse1evfpsi3PBERGosRPc/2v0TQlGQRAT_OYMafyJIN2zUV8YsBYObQRJp_HGTHrI=
 ```

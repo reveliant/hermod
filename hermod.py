@@ -45,7 +45,8 @@ class SignConfig(object):
             description='Give RSA signature for the following options',
             epilog='Program will read for YAML on standard input if no argument is given'
         )
-        parser.add_argument('-k', '--key', dest='key', help='AES key file')
+        parser.add_argument('-a', '--aes-key', dest='aes_key', help='AES key file')
+        parser.add_argument('-k', '--hmac-key', dest='hmac_key', help='HMAC key file')
         parser.add_argument('-m', '--mail', dest='address', help='send email to ADDRESS')
         parser.add_argument('-r', '--redirect', dest='url', help='redirect to URL on success')
         parser.parse_args(namespace=self)
@@ -68,14 +69,19 @@ class SignConfig(object):
         """
         check = True
 
-        if self.key is None:
+        if self.aes_key is None:
             print('Missing AES key file')
             check = False
         else:
-            with open(self.key, mode='rb') as keyfile:
-                self.__aes_key = b64decode(keyfile.read(24))
-                keyfile.read(2) # Consume \r\n
-                self.__hmac_key = b64decode(keyfile.read(24))
+            with open(self.aes_key, mode='rb') as keyfile:
+                self.__aes_key = b64decode(keyfile.read())
+                
+        if self.hmac_key is None:
+            print('Missing HMAC key file')
+            check = False
+        else:
+            with open(self.hmac_key, mode='rb') as keyfile:
+                self.__hmac_key = b64decode(keyfile.read())
 
         if self.address is None:
             print('Missing mail address')
