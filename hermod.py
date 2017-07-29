@@ -18,10 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import argparse
-from base64 import b64decode, urlsafe_b64encode
+from base64 import b64decode, urlsafe_b64encode, urlsafe_b64decode
 import yaml
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
+from Crypto import Random
 from Crypto.Hash import HMAC, SHA256
 
 class SignConfig(object):
@@ -83,13 +84,17 @@ class SignConfig(object):
             check = False
 
         return check
+    
+    def create_iv(self):
+        iv = Random.get_random_bytes(8)
+        return urlsafe_b64encode(iv).decode('utf-8')
 
-    def encrypt(self):
+    def encrypt(self, iv):
         """
         Encrypt email address with AES key
         """
         message = self.address.encode('ascii')
-        ctr = Counter.new(128)
+        ctr = Counter.new(64, prefix=urlsafe_b64decode(iv))
         cipher = AES.new(self.__key, AES.MODE_CTR, counter=ctr)
         ciphertext = cipher.encrypt(message)
         return urlsafe_b64encode(ciphertext).decode('utf-8')
@@ -116,10 +121,11 @@ def main():
         config.from_yaml(sys.stdin)
 
     if config.check():
-        ciphertext = config.encrypt()
+        iv = config.create_iv()
+        ciphertext = config.encrypt(iv)
         hmac = config.sign()
-        text = 'Set the API endpoint to the following value:\n\n<api root>/%s/%s\n'
-        print(text % (ciphertext, hmac))
+        text = 'Set the API endpoint to the following value:\n\n<api root>/%s/%s/%s\n'
+        print(text % (iv, ciphertext, hmac))
 
 if __name__ == '__main__':
     main()
