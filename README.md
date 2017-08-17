@@ -1,83 +1,138 @@
-![Hermód](logo.png)
+<img src="hermod/resources/logo.svg?raw=true" type="image/svg+xml"/>
 
 # Hermód
 
 Hermód adds mail sending capability to your static sites (e.g. "Contact us" forms).
 
-It's privacy-aware, protecting your email address from eavesdropper without any account creation.
+It is privacy-aware, protecting your email address from eavesdropper without any account creation.
 
-No database nor further server configuration is required after setting some variables.
+This project is intended to run on a [Heroku](https://heroku.com/) Python dyno with the [Mailgun](https://elements.heroku.com/addons/mailgun) add-on (both of them are free of charge for the expected limited usage) but can also run with any Python 2 or 3 installation (with pip) and a SMTP server.
 
-To configure new forms, you'll just need to set the action URL with a token computed with provided utility and *voila*!
+## Quick setup guide
 
-## Setup guide
+1. Clone repository on your computer and install Python dependancies:
 
-This project is intended to run on a [Heroku](https://heroku.com/) Python dyno with the [Mailgun](https://elements.heroku.com/addons/mailgun) add-on (both of them are free of charge for the expected limited usage). You can also run it standalone with Python 3 and a SMTP server.
+        pip install -r requirements.txt
+2. Generate AES and MAC keys:
 
-### Prerequisite
+   ``` bash
+    openssl rand -base64 16 | tee aes.key
+    openssl rand -base64 16 | tee mac.key
+    chmod go-rwx aes.key mac.key
+    ```
 
-Create two 128-bits keys for AES and HMAC (and keep them secrets!):
-```Shell
-$ openssl rand -base64 16 > hermod_aes.key
-$ openssl rand -base64 16 > hermod_hmac.key
-$ chmod go-rwx hermod_aes.key hermod_hmac.key
-```
+3. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+4. On Heroku, set `HERMOD_AES_KEY` and `HERMOD_MAC_KEY` config variables with the corresponding key (base64 strings).
 
-Those keys will be used:
- * to encrypt with AES-128 destination email address, avoiding eavesdropper and spam;
- * to sign (HMAC SHA-256) critical fields, avoiding insecure redirection after submission.
+You are now ready to handle requests.
 
-### Heroku setup
+### Setting up a new form
 
-1. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-2. Set `HERMOD_KEY` config variable with the previously generated AES key (base64 string)
-  
-### On promise setup
+On your computer, generate a token for new form:
 
-1. Install Python 3 + pip
-2. Clone repository
-3. Install dependancies:
-```Shell
-$ pip install -r requirements.txt
-```
-4. Set environment variables:
-  * `HERMOD_AES_KEY` with the previously generated AES key,
-  * `HERMOD_HMAC_KEY` with the previously generated HMAC key,
-  * `MAILGUN_SMTP_LOGIN`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_SMTP_SERVER` and `MAILGUN_SMTP_PORT` with appropriate parameters for your SMTP server,
-  * Note that `MAILGUN` is kept on variables names to speed up setting of Heroku instance; you don't actually need to use Mailgun services at all.
-5. Start server:
-```Shell
-$ python hermod-daemon.py PORT
-```
+        python hermod.py 'contact@example.com' 'http://example.com/gotothispageaftersubmition'
+        Set the Hermod API endpoint to the following value: /QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
 
-### Setup new form
+You can now fill your HTML form:
 
-1. If you haven't already, copy `hermod.py` localy and make it executable
-
-2. Compute endpoint token with `hermod.py` utility :
-  * previously generated AES key (`-a|--aes-key`)
-  * previously generated HMAC key (`-k|--hmac-key`)
-  * destination email address (`-m|--mail`)
-  * URL to redirect to after submission (`-r|--redirect`):
-  
-  e.g.:
-```Shell
-$ ./hermod.py -a hermod_aes.key -k hermod_hmac.key -m contact-me@domain.com -r http://domain.com/gotothispageaftersubmition
-Set the API endpoint to the following value:
-<api root>/prxLO0-KjmQ=/mqtKse1evfpsi3PBERGosRPc/2v0TQlGQRAT_OYMafyJIN2zUV8YsBYObQRJp_HGTHrI=
-```
-
-3. Set the target URL on your form to point your instance with the token, and set the "redirect" field, e.g.:
-```HTML
+```html
 <form
-      action="http://your-instance.herokuapp.com/send/rax6y9io-dV9-OD_g9sB22e7/e259e919c742fb6381925c148cb1cacc665f5f7626645fde003c98b79c315fe8"
+      action="http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ="
       method="POST">
     <p><input type="email" name="from" placeholder="Your email address"/></p>
     <p><textarea name="message" placehold="Your message"></textarea></p>
     <input type="hidden" name="redirect" value="http://domain.com/gotothispageaftersubmition"/>
+    <input type="hidden" name="hermod" value=""/>
     <p><input type="submit" value="Send"></p>
 </form>
 ```
+
+## Complete guide and reference
+
+Hermód reads its configuration from two sources (the later taking precedence):
+
+* environment variables;
+* configuration file.
+
+### Environment variables
+
+* Cryptographic keys (base64-encoded strings):
+    * `HERMOD_AES_KEY`: for encryption,
+    * `HERMOD_MAC_KEY`: for signature;
+* Server:
+    * `PORT`: HTTP server port number
+* Form fields names:
+    * `HERMOD_REDIRECT`: name of redirection URL field,
+    * `HERMOD_HONEYPOT`: name of honeypot field which must remain blank to avoid spam;
+* SMTP settings:
+    * `MAILGUN_SMTP_SERVER`: server address
+    * `MAILGUN_SMTP_PORT`: server port
+    * `MAILGUN_SMTP_LOGIN`: login
+    * `MAILGUN_SMTP_PASSWORD`: password
+    * You are not tied to Mailgun service: those variables names are use to speed up Heroku configuration.
+
+On Heroku setup, only `HERMOD_*` variables have to be set.
+
+### Configuration file
+
+The configuration file is expected to be on the current directory, on user configuration directory or on system-wide configuration directory (e.g. `~/.config/hermod/` and `/etc/hermod/` on Linux for the latest).
+Default filename is `hermod.cfg`.
+
+Here is an sample config file for reference. Each section and parameter are optional, and defaults values are show.
+
+```ini
+[Keys]
+AES = aes.key
+MAC = hmac.key
+
+[Server]
+Port = 38394
+
+[Fields]
+Redirect = url
+Honeypot = hermod
+
+[SMTP]
+Server = localhost
+Port = 25
+Login = 
+Password = 
+```
+
+### Cryptography usage
+
+#### Encryption
+
+* destination email address is encrypted with AES-128 (CTR mode);
+* ensure destination address privacy;
+* avoid spam from plaintext address in HTML pages.
+
+#### Signature
+
+* email address and redirection URL are signed with HMAC (SHA-256);
+* ensure parameters integrity;
+* avoid insecure redirection.
+
+### Command line options
+
+    hermod.py [-he] [-c FILE] {EMAIL ADDRESS} {REDIRECT_URL}
+    hermod.py [-he] [-c FILE] -d [-p PORT]
+
+#### General options
+
+* `-h|--help` : show help message
+* `-e|--env`: use only environment variables and no configuration file
+* `-c|--conf FILE`: use FILE instead of default configuration file name and path
+
+#### Token generation options
+
+* `EMAIL ADDRESS`: messages will be send to this address
+* `REDIRECT_URL`: client will be redirected to that URL after submission
+
+#### Server options
+
+* `-d|--daemon`: start as daemon and do not compute token
+* `-p|--port PORT`: listen on port PORT
 
 ## License
 
