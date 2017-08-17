@@ -3,17 +3,17 @@
     "description": "Adds mail sending capability to your static sites. Privacy-aware, protects your email address from eavesdropper.",
     "image": "heroku/python",
     "repository": "https://github.com/reveliant/hermod",
-    "logo": "https://github.com/reveliant/hermod/blob/master/logo.png",
+    "logo": "https://github.com/reveliant/hermod/blob/master/logo.png?raw=true",
     "keywords": [ "python", "smtp" ],
     "addons": [ "mailgun" ],
     "env": {
         "HERMOD_AES_KEY": {
             "description": "AES-128 key in base64",
-            "value": ""
+            "required": false
         },
         "HERMOD_MAC_KEY": {
             "description": "HMAC key in base64",
-            "value": ""
+            "required": false
         },
         "HERMOD_REDIRECT": {
             "description": "Redirect URL field name",
@@ -22,6 +22,10 @@
         "HERMOD_HONEYPOT": {
             "description": "Honeypot field name",
             "value": "hermod"
+        },
+        "HERMOD_FROM": {
+            "description": "<From> email address",
+            "value": "hermod@sandbox-0000.mailgun.com"
         }
     }
 }
