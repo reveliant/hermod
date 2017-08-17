@@ -9,11 +9,11 @@
     "env": {
         "HERMOD_AES_KEY": {
             "description": "AES-128 key in base64",
-            "required": false
+            "value": ""
         },
         "HERMOD_MAC_KEY": {
             "description": "HMAC key in base64",
-            "required": false
+            "value": ""
         },
         "HERMOD_REDIRECT": {
             "description": "Redirect URL field name",
