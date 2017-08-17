@@ -55,6 +55,7 @@ class Config(object):
 
     # SMTP configuration
     smtp = Attributes(
+        from=os.environ.get('HERMOD_FROM', 'hermod@localhost'),
         server=os.environ.get('MAILGUN_SMTP_SERVER', 'localhost'),
         port=int(os.environ.get('MAILGUN_SMTP_PORT', 25)),
         login=os.environ.get('MAILGUN_SMTP_LOGIN', ''),

@@ -12,17 +12,20 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 
 1. Clone repository on your computer and install Python dependancies:
 
-        pip install -r requirements.txt
+   ``` bash
+   pip install -r requirements.txt
+   ```
+   
 2. Generate AES and MAC keys:
 
    ``` bash
-    openssl rand -base64 16 | tee aes.key
-    openssl rand -base64 16 | tee mac.key
-    chmod go-rwx aes.key mac.key
+   openssl rand -base64 16 | tee aes.key
+   openssl rand -base64 16 | tee mac.key
+   chmod go-rwx aes.key mac.key
     ```
 
 3. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-4. On Heroku, set `HERMOD_AES_KEY` and `HERMOD_MAC_KEY` config variables with the corresponding key (base64 strings).
+4. On Heroku, customize `HERMOD_*` variables (at least `HERMOD_AES_KEY` and `HERMOD_MAC_KEY`).
 
 You are now ready to handle requests.
 
@@ -30,8 +33,11 @@ You are now ready to handle requests.
 
 On your computer, generate a token for new form:
 
-        python hermod.py 'contact@example.com' 'http://example.com/gotothispageaftersubmition'
-        Set the Hermod API endpoint to the following value: /QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
+```bash
+python hermod.py 'contact@example.com' 'http://example.com/gotothispageaftersubmition'
+Set the Hermod API endpoint to the following value:
+/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
+```
 
 You can now fill your HTML form:
 
@@ -65,7 +71,8 @@ Hermód reads its configuration from two sources (the later taking precedence):
     * `HERMOD_REDIRECT`: name of redirection URL field,
     * `HERMOD_HONEYPOT`: name of honeypot field which must remain blank to avoid spam;
 * SMTP settings:
-    * `MAILGUN_SMTP_SERVER`: server address
+    * `HERMOD_FROM`: 'From' address. No reply is expected from such address.
+    * `MAILGUN_SMTP_SERVER`: server name
     * `MAILGUN_SMTP_PORT`: server port
     * `MAILGUN_SMTP_LOGIN`: login
     * `MAILGUN_SMTP_PASSWORD`: password
@@ -93,6 +100,7 @@ Redirect = url
 Honeypot = hermod
 
 [SMTP]
+From = hermod@localhost
 Server = localhost
 Port = 25
 Login = 

@@ -95,7 +95,7 @@ class Hermod(object):
         digest = signature(self.args.address, self.args.redirect)
         hmac = crypto.sign(digest)
 
-        text = 'Set the Hermod API endpoint to the following value: /%s/%s/%s'
+        text = 'Set the Hermod API endpoint to the following value:\n/%s/%s/%s'
         print(text % (cipher_iv, ciphertext, hmac))
 
 

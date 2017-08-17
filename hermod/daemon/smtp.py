@@ -21,6 +21,7 @@
 from __future__ import (absolute_import, division, print_function)
 
 from smtplib import SMTP
+from email.message import EmailMessage
 
 __all__ = ['MailClient']
 
@@ -28,20 +29,27 @@ class MailClient(object):
     """Mail client class"""
     def __init__(self, config):
         self._msg = None
+        self._from = config.smtp.from
         self._smtp = SMTP(config.smtp.server, config.smtp.port)
-        self._smtp.connect()
         self._smtp.starttls()
         if config.smtp.login != '':
             self._smtp.login(config.smtp.login, config.smtp.password)
 
-    def send(self, addr, msg=None):
-        """Send msg to addr"""
-        if msg is None:
-            msg = self._msg
-
-        self._smtp.sendmail(
-            'hermod@instance.org',
-            addr,
-            msg
-            )
+    def send(self, addr, message=None):
+        """Send messagg to addr"""
+        msg = EmailMessage()
+        
+        msg['Subject'] = 'Message via Hermod'
+        msg['From'] = self._from
+        msg['To'] = addr
+                    
+        if isinstance(message, dict):
+          body = ''
+          for key in message:
+            body += '%s:\r\n%s\r\n\r\n' % (key, message[key])
+          msg.set_content(body)
+        else:
+          msg.set_content(str(message))
+          
+        self._smtp.send_message(msg)
         self._smtp.quit()

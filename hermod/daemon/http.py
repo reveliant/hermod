@@ -115,8 +115,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.validate_payload()
 
             mail = MailClient(self.config)
-            #sent = mail.send(self.metadata.address, self.fields)
-            #if sent:
+            sent = mail.send(self.metadata.address, self.fields)
+            if sent:
             self.redirect(self.metadata.redirect)
         except MalformedError as err:
             print(err, file=sys.stderr)
