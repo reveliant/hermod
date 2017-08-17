@@ -29,7 +29,7 @@ class MailClient(object):
     """Mail client class"""
     def __init__(self, config):
         self._msg = None
-        self._from = config.smtp.from
+        self._from = config.smtp.sender
         self._smtp = SMTP(config.smtp.server, config.smtp.port)
         self._smtp.starttls()
         if config.smtp.login != '':

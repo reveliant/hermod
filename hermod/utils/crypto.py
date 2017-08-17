@@ -20,8 +20,10 @@
 
 from __future__ import (absolute_import, division, print_function)
 
+import sys
 from io import BufferedReader
 from base64 import b64decode, urlsafe_b64encode, urlsafe_b64decode
+from binascii import Error as PaddingError
 
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
@@ -46,7 +48,10 @@ class Keyring(object): # pylint: disable=too-few-public-methods
             key.close()
         else:
             pkey = str(key)
-        self._keys[keyname] = b64decode(pkey)
+        try:
+            self._keys[keyname] = b64decode(pkey)
+        except PaddingError:
+            print('Invalid key padding: %s' % keyname, file=sys.stdout)
 
     def __getattr__(self, attr):
         return self._keys[attr]
@@ -63,7 +68,7 @@ class Crypto(object):
         self._ready = False
         self._keys = Keyring(keys)
 
-        if self._keys.aes != '' and self._keys.mac != '':
+        if 'aes' in self._keys and 'mac' in self._keys:
             self._ready = True
         else:
             return None
