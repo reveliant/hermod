@@ -1,3 +1,4 @@
-PyYAML==3.12
-pycryptodome==3.4.6
-virtualenv==15.1.0
+pathlib
+appdirs
+pycryptodome
+virtualenv
