@@ -51,5 +51,7 @@ class MailClient(object):
         else:
           msg.set_content(str(message))
           
-        self._smtp.send_message(msg)
-        self._smtp.quit()
+        try:
+          self._smtp.send_message(msg)
+        finally:
+          self._smtp.quit()
