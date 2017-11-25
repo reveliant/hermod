@@ -33,7 +33,7 @@ import shutil
 from pathlib import Path
 from pkg_resources import resource_filename
 
-from hermod.daemon.smtp import MailClient
+from hermod.daemon.smtp import MailClient, MailError
 from hermod.utils import APPNAME, Attributes, signature
 from hermod.utils.crypto import Crypto
 
@@ -49,7 +49,7 @@ class HTTPServer(PyHTTPServer):
 
     def start(self):
         """Start daemon"""
-        print('Hermod listening on port: %i' % self.config.port)
+        print('Hermod listening on port: {0}'.format(self.config.port))
         self.serve_forever()
 
     def stop(self):
@@ -79,7 +79,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         address=None,
         redirect=None,
         digest=None
-        )
+    )
 
     if not mimetypes.inited:
         mimetypes.init() # try to read system mime.types
@@ -90,7 +90,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         '.py': 'text/plain',
         '.c': 'text/plain',
         '.h': 'text/plain',
-        })
+    })
 
     def do_HEAD(self): # pylint: disable=invalid-name
         """Handle HEAD method requests"""
@@ -99,10 +99,13 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self): # pylint: disable=invalid-name
         """Handle GET method requests"""
-        if self.path != '/':
+        if self.path not in ['/', '/favicon.ico']:
             self.redirect('/')
         else:
-            self.send_file('response.html')
+            if self.path == '/favicon.ico':
+                self.send_file('logo.svg')
+            else:
+                self.send_file('response.html')
 
     def do_POST(self): # pylint: disable=invalid-name
         """Handle POST method requests"""
@@ -123,6 +126,9 @@ class RequestHandler(BaseHTTPRequestHandler):
         except TamperedError as err:
             print(err, file=sys.stderr)
             self.send_error(403, 'Forbidden')
+        except MailError as err:
+            print(err, file=sys.stderr)
+            self.send_error(587, 'Mail Server Error', 'An error occured while dealing with mail server')
         except BaseException as err: # Any other exception
             print(err, file=sys.stderr)
             self.send_error(500, 'Internal Server Error')
@@ -147,9 +153,9 @@ class RequestHandler(BaseHTTPRequestHandler):
         body = FieldStorage(
             fp=self.rfile,
             headers=self.headers,
-            environ={'REQUEST_METHOD':'POST'},
+            environ={'REQUEST_METHOD': 'POST'},
             keep_blank_values=True
-            )
+        )
 
         self.fields = dict()
         for key in body.keys():
@@ -162,7 +168,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             # Save redirect URL
             self.metadata.redirect = self.fields[self.config.fields.redirect]
         except KeyError as err:
-            raise MalformedError('Missing required field: %s' % err.args[0])
+            raise MalformedError('Missing required field: {0}'.format(err.args[0]))
 
         # Remove metadata fields
         del self.fields[self.config.fields.honeypot]
@@ -186,26 +192,26 @@ class RequestHandler(BaseHTTPRequestHandler):
     def send_file(self, filename, headers=None):
         """Send file content to client
         Additionnal headers can be passed as dict"""
-        fres = None
+        f_res = None
 
         # Guessing Content-Type
         ext = Path(filename).suffix
         if ext in self.extensions_map:
-            ctype = self.extensions_map[ext]
+            content_type = self.extensions_map[ext]
         elif ext.lower() in  self.extensions_map:
-            ctype = self.extensions_map[ext.lower()]
+            content_type = self.extensions_map[ext.lower()]
         else:
-            ctype = self.extensions_map['']
+            content_type = self.extensions_map['']
 
         # Opening file
         try:
             if not Path(filename).is_file():
                 filename = resource_filename('hermod.resources', filename)
-            fres = open(filename, 'rb')
-            fstats = os.fstat(fres.fileno())
+            f_res = open(filename, 'rb')
+            fstats = os.fstat(f_res.fileno())
 
             self.send_response(200)
-            self.send_header("Content-type", ctype)
+            self.send_header("Content-type", content_type)
             self.send_header("Content-Length", str(fstats[6]))
             self.send_header("Last-Modified", self.date_time_string(fstats.st_mtime))
 
@@ -214,8 +220,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.send_header(name, headers[name])
             self.end_headers()
 
-            shutil.copyfileobj(fres, self.wfile)
-            fres.close()
+            shutil.copyfileobj(f_res, self.wfile)
+            f_res.close()
         except OSError:
             self.send_error(404, 'File not found')
 
