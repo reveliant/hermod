@@ -1,4 +1,4 @@
-<img src="hermod/resources/logo.svg?raw=true" type="image/svg+xml"/>
+<img src="logo.png?raw=true" type="image/png"/>
 
 # Hermód
 
@@ -96,6 +96,8 @@ MAC = hmac.key
 Port = 38394
 
 [Fields]
+From = from
+Name = name
 Redirect = url
 Honeypot = hermod
 
