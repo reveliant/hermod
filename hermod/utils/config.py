@@ -22,13 +22,14 @@ from __future__ import (absolute_import, division, print_function)
 
 import os
 import sys
-try: # Python 3
-    from configparser import ConfigParser
-except ImportError: # Python 3
-    from ConfigParser import ConfigParser
 from copy import copy
 from pathlib import Path
+try: # Python 3
+    from configparser import ConfigParser
+except ImportError: # Python 2
+    from ConfigParser import ConfigParser
 
+# Python 3 standard / Python 2 in pip
 from appdirs import AppDirs
 
 from hermod.utils import APPNAME, Attributes
@@ -42,16 +43,18 @@ class Config(object):
     _keys = Attributes(
         aes=os.environ.get('HERMOD_AES_KEY', 'aes.key'),
         mac=os.environ.get('HERMOD_MAC_KEY', 'mac.key')
-        )
+    )
 
     # Daemon HTTP port
     port = int(os.environ.get('PORT', 38394))
 
     # Metadata fields names
     fields = Attributes(
+        sender=os.environ.get('HERMOD_FROM', 'from'),
+        name=os.environ.get('HERMOD_NAME', 'name'),
         redirect=os.environ.get('HERMOD_REDIRECT', 'url'),
         honeypot=os.environ.get('HERMOD_HONEYPOT', 'hermod')
-        )
+    )
 
     # SMTP configuration
     smtp = Attributes(
@@ -61,11 +64,34 @@ class Config(object):
         login=os.environ.get('MAILGUN_SMTP_LOGIN', ''),
         password=os.environ.get('MAILGUN_SMTP_PASSWORD', '')
         # Avoid passing password in command line variables!
-        )
+    )
 
     def __init__(self, filename):
         if filename is not None:
             self.load(filename)
+
+    def load_fields(self, conf):
+        if conf.has_option('Fields', 'From'):
+            self.fields.sender = conf.get('Fields', 'From')
+        if conf.has_option('Fields', 'Name'):
+            self.fields.name = conf.get('Fields', 'Name')
+        if conf.has_option('Fields', 'Redirect'):
+            self.fields.redirect = conf.get('Fields', 'Redirect')
+        if conf.has_option('Fields', 'Honeypot'):
+            self.fields.honeypot = conf.get('Fields', 'Honeypot')
+
+    def load_smtp(self, conf):
+        if conf.has_option('SMTP', 'Server'):
+            self.smtp.server = conf.get('SMTP', 'Server')
+        if conf.has_option('SMTP', 'Port'):
+            try:
+                self.smtp.port = conf.getint('SMTP', 'Port')
+            except AttributeError:
+                self.smtp.port = int(conf.get('SMTP', 'Port'))
+        if conf.has_option('SMTP', 'Login'):
+            self.smtp.login = conf.get('SMTP', 'Login')
+        if conf.has_option('SMTP', 'Password'):
+            self.smtp.password = conf.get('SMTP', 'Password')
 
     def load(self, filename):
         """Load configuration file"""
@@ -80,24 +106,20 @@ class Config(object):
                 self._keys[cfg[0]] = self._find_keyfile(cfg[1])
 
         if conf.has_option('Server', 'Port'):
-            self.port = conf.get_int('Server', 'Port')
+            try:
+                self.port = conf.getint('Server', 'Port')
+            except AttributeError:
+                self.port = int(conf.get('Server', 'Port'))
 
-        if conf.has_option('Fields', 'Redirect'):
-            self.fields.redirect = conf.get('Fields', 'Redirect')
-        if conf.has_option('Fields', 'Honeypot'):
-            self.fields.honeypot = conf.get('Fields', 'Honeypot')
+        if conf.has_section('Fields'):
+            self.load_fields(conf)
 
-        if conf.has_option('SMTP', 'Server'):
-            self.smtp.server = conf.get('SMTP', 'Server')
-        if conf.has_option('SMTP', 'Port'):
-            self.smtp.port = conf.get_int('SMTP', 'Port')
-        if conf.has_option('SMTP', 'Login'):
-            self.smtp.login = conf.get('SMTP', 'Login')
-        if conf.has_option('SMTP', 'Password'):
-            self.smtp.password = conf.get('SMTP', 'Password')
+        if conf.has_section('smtp'):
+            self.load_smtp(conf)
 
     @property
     def _conf_path(self):
+        """Return path to search configuration file in"""
         # Remove XDG path as it is a non graphical app
         os.environ['XDG_CONFIG_DIRS'] = '/etc:/usr/local/etc'
         appdirs = AppDirs(APPNAME, APPNAME, multipath=True)
