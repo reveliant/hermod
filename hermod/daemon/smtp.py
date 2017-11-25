@@ -20,38 +20,55 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-from smtplib import SMTP
-from email.message import EmailMessage
+import errno
+from smtplib import SMTP, SMTPException
+try: #Python 3
+    from email.message import EmailMessage
+except ImportError: # Python 2
+    from email.message import Message as EmailMessage
 
-__all__ = ['MailClient']
+__all__ = ['MailClient', 'MailError']
+
+class MailError(Exception):
+    """This exception is raised when something is wrong with SMTP"""
+    pass
 
 class MailClient(object):
     """Mail client class"""
     def __init__(self, config):
         self._msg = None
         self._from = config.smtp.sender
-        self._smtp = SMTP(config.smtp.server, config.smtp.port)
-        self._smtp.starttls()
-        if config.smtp.login != '':
-            self._smtp.login(config.smtp.login, config.smtp.password)
+
+        try:
+            self._smtp = SMTP(config.smtp.server, config.smtp.port)
+            self._smtp.starttls()
+            if config.smtp.login != '':
+                self._smtp.login(config.smtp.login, config.smtp.password)
+        except SMTPException as err:
+            raise MailError('Undefined SMTP error')
+        except OSError as err:
+            if err.errno == errno.ECONNREFUSED:
+                raise MailError('Unable to connect to {0}:{1}'.format(config.smtp.server, config.smtp.port))
+            else:
+                raise MailError('Undefined OS error while sending mail')
 
     def send(self, addr, message=None):
         """Send messagg to addr"""
         msg = EmailMessage()
-        
-        msg['Subject'] = 'Message via Hermod'
-        msg['From'] = self._from
-        msg['To'] = addr
-                    
+
+        msg.add_header('Subject', 'Message via Hermod')
+        msg.add_header('From', self._from)
+        msg.add_header('To', addr)
+
         if isinstance(message, dict):
-          body = ''
-          for key in message:
-            body += '%s:\r\n%s\r\n\r\n' % (key, message[key])
-          msg.set_content(body)
+            body = ''
+            for key in message:
+                body += '{0}:\r\n{1}\r\n\r\n'.format(key, message[key])
+            msg.set_content(body)
         else:
-          msg.set_content(str(message))
-          
+            msg.set_content(str(message))
+
         try:
-          self._smtp.send_message(msg)
+            self._smtp.send_message(msg)
         finally:
-          self._smtp.quit()
+            self._smtp.quit()
