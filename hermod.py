@@ -60,7 +60,7 @@ class Hermod(object):
         daemon = parser.add_argument_group('Daemon mode options')
         daemon.add_argument('-d', '--daemon', dest='as_daemon', action='store_true',
                             help='Start as daemon')
-        daemon.add_argument('-p', '--port', dest='daemon_port', nargs='?', type=int,
+        daemon.add_argument('-p', '--port', dest='daemon_port', type=int,
                             metavar='PORT', help='Listen on port PORT')
 
         cli = parser.add_argument_group('Command line mode options')
@@ -95,8 +95,8 @@ class Hermod(object):
         digest = signature(self.args.address, self.args.redirect)
         hmac = crypto.sign(digest)
 
-        text = 'Set the Hermod API endpoint to the following value:\n/%s/%s/%s'
-        print(text % (cipher_iv, ciphertext, hmac))
+        text = 'Set the Hermod API endpoint to the following value:\n/{0}/{1}/{2}'
+        print(text.format(cipher_iv, ciphertext, hmac))
 
 
 if __name__ == '__main__':
