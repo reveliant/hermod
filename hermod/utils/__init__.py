@@ -40,4 +40,4 @@ class Attributes(dict):
 
 def signature(address=None, url=None):
     """Signature string to compute digest from"""
-    return 'address: %s\nredirect: %s' % (address, url)
+    return 'address: {0}\nredirect: {1}'.format(address, url)

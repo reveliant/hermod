@@ -51,7 +51,7 @@ class Keyring(object): # pylint: disable=too-few-public-methods
         try:
             self._keys[keyname] = b64decode(pkey)
         except PaddingError:
-            print('Invalid key padding: %s' % keyname, file=sys.stdout)
+            print('Invalid key padding: {0}'.format(keyname), file=sys.stdout)
 
     def __getattr__(self, attr):
         return self._keys[attr]
@@ -115,6 +115,6 @@ class Crypto(object):
                 return False
 
 def aes_iv(size=8):
-    """Generate cryptographic secure pseudo-random number (CSPRN) for initialisation verctor"""
+    """Generate cryptographic secure pseudo-random number (CSPRN) for initialisation vector"""
     bytes_iv = Random.get_random_bytes(size)
     return urlsafe_b64encode(bytes_iv).decode('utf-8')
