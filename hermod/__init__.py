@@ -18,4 +18,24 @@
 
 """Hermod package root"""
 
+from flask import Flask, render_template
+
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
+
+app = Flask(__name__)
+
+@app.route('/')
+def placeholder():
+    return render_template('response.html')
+
+@app.route('/new')
+def show_new_form():
+    return render_template('response.html')
+
+@app.route('/endpoint', method=['POST'])
+def register_endpoint():
+    return None
+
+@app.route('/send/<iv>/<ciphered>/<hmac>', method=['POST'])
+def send_form(iv, ciphered, hmac):
+    return None

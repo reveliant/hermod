@@ -1,4 +1,6 @@
 pathlib
 appdirs
 pycryptodome
-virtualenv
+flask
+flask-mail
+gunicorn

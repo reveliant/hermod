@@ -1,1 +1,1 @@
-web: python hermod.py -d -e
+web: gunicorn hermod:app --log-gile -
