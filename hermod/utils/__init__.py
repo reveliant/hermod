@@ -20,23 +20,10 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-__all__ = ['APPNAME', 'Attributes', 'signature']
+from .config import Config
+from .crypto import Crypto, aes_iv
 
-APPNAME = 'hermod'
-
-class Attributes(dict):
-    """SimpleNamespace alternative"""
-    def __getattr__(self, attr):
-        return self[attr]
-
-    def __setattr__(self, attr, value):
-        self[attr] = value
-
-    def __delattr__(self, attr):
-        del self[attr]
-
-    def __copy__(self):
-        return type(self)(self)
+__all__ = ['signature', 'Config', 'Crypto', 'aes_iv']
 
 def signature(address=None, url=None):
     """Signature string to compute digest from"""

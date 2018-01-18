@@ -25,9 +25,9 @@ from io import BufferedReader
 from base64 import b64decode, urlsafe_b64encode, urlsafe_b64decode
 from binascii import Error as PaddingError
 
+from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
-from Crypto import Random
 from Crypto.Hash import HMAC, SHA256
 
 __all__ = ["Crypto", "aes_iv"]
@@ -51,7 +51,7 @@ class Keyring(object): # pylint: disable=too-few-public-methods
         try:
             self._keys[keyname] = b64decode(pkey)
         except PaddingError:
-            print('Invalid key padding: {0}'.format(keyname), file=sys.stdout)
+            print('Invalid key padding: {0} {1}'.format(keyname, pkey), file=sys.stdout)
 
     def __getattr__(self, attr):
         return self._keys[attr]

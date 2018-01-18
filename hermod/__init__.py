@@ -18,24 +18,40 @@
 
 """Hermod package root"""
 
-from flask import Flask, render_template
+import os
+from flask import Flask, render_template, request
+from .utils import signature, Config, Crypto, aes_iv
 
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
-app = Flask(__name__)
+__all__ = ['APP']
 
-@app.route('/')
+APP = Flask(__name__)
+APP.logger.setLevel(0)
+
+config = Config(os.environ.get('HERMOD_CONFIG', None))
+# APP.config.<update>(config)
+
+@APP.route('/')
 def placeholder():
     return render_template('response.html')
 
-@app.route('/new')
-def show_new_form():
-    return render_template('response.html')
+@APP.route('/endpoint', methods=['GET', 'POST'])
+def endpoint():
+    if request.method == 'POST':
+        crypto = Crypto(config.keyfiles)
+        cipher_iv = aes_iv()
+        ciphertext = crypto.encrypt(cipher_iv, request.form['address'])
+        digest = signature(request.form['address'], request.form['redirect'])
+        hmac = crypto.sign(digest)
 
-@app.route('/endpoint', method=['POST'])
-def register_endpoint():
-    return None
+        text = 'Set the Hermod API endpoint to the following value:\n{0}send/{1}/{2}/{3}'
+        APP.logger.debug(text.format(request.host_url, cipher_iv, ciphertext, hmac))
+        # mail
+        return ''
+    else:
+        return render_template('response.html')
 
-@app.route('/send/<iv>/<ciphered>/<hmac>', method=['POST'])
-def send_form(iv, ciphered, hmac):
-    return None
+@APP.route('/send/<cipher_iv>/<ciphertext>/<hmac>', methods=['POST'])
+def handle(cipher_iv, ciphertext, hmac):
+    return '{0}\n{1}\n{2}\n{3}'.format(request.form, cipher_iv, ciphertext, hmac)

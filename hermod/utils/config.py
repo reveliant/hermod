@@ -32,15 +32,13 @@ except ImportError: # Python 2
 # Python 3 standard / Python 2 in pip
 from appdirs import AppDirs
 
-from hermod.utils import APPNAME, Attributes
-
 __all__ = ['Config']
 
 class Config(object):
     """Hermod configuration handling"""
 
     # Key files dictionnary
-    _keys = Attributes(
+    _keys = dict(
         aes=os.environ.get('HERMOD_AES_KEY', 'aes.key'),
         mac=os.environ.get('HERMOD_MAC_KEY', 'mac.key')
     )
@@ -49,7 +47,7 @@ class Config(object):
     port = int(os.environ.get('PORT', 38394))
 
     # Metadata fields names
-    fields = Attributes(
+    fields = dict(
         sender=os.environ.get('HERMOD_FROM', 'from'),
         name=os.environ.get('HERMOD_NAME', 'name'),
         redirect=os.environ.get('HERMOD_REDIRECT', 'url'),
@@ -57,7 +55,7 @@ class Config(object):
     )
 
     # SMTP configuration
-    smtp = Attributes(
+    smtp = dict(
         sender=os.environ.get('HERMOD_FROM', 'hermod@localhost'),
         server=os.environ.get('MAILGUN_SMTP_SERVER', 'localhost'),
         port=int(os.environ.get('MAILGUN_SMTP_PORT', 25)),
@@ -66,7 +64,7 @@ class Config(object):
         # Avoid passing password in command line variables!
     )
 
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         if filename is not None:
             self.load(filename)
 
@@ -114,7 +112,7 @@ class Config(object):
         if conf.has_section('Fields'):
             self.load_fields(conf)
 
-        if conf.has_section('smtp'):
+        if conf.has_section('SMTP'):
             self.load_smtp(conf)
 
     @property
@@ -122,7 +120,7 @@ class Config(object):
         """Return path to search configuration file in"""
         # Remove XDG path as it is a non graphical app
         os.environ['XDG_CONFIG_DIRS'] = '/etc:/usr/local/etc'
-        appdirs = AppDirs(APPNAME, APPNAME, multipath=True)
+        appdirs = AppDirs(__name__, __name__, multipath=True)
 
         confpath = appdirs.site_config_dir.split(os.pathsep)
         confpath.append(appdirs.user_config_dir)
