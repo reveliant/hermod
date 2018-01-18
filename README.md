@@ -1,4 +1,4 @@
-<img src="logo.png?raw=true" type="image/png"/>
+<img src="hermod/static/logo.png?raw=true" type="image/png"/>
 
 # Hermód
 
