@@ -1,16 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html class="{% if error %}error{% else %}{{ page }}{% endif %}">
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title>Hermód</title>
-    <link rel="stylesheet" href="static/style.css"/>
+    <link rel="stylesheet" href="/static/style.css"/>
   </head>
   <body>
     <a href="https://github.com/reveliant/hermod">
-      <img id="fork-me" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png">
+      <img id="fork-me" src="/static/form-me.png" alt="Fork me on GitHub">
     </a>
-    <img src="static/logo.svg" height="256" width="256" alt=""/>
-    <p>Static site mails with Hermód<p>
+    <div class="brand">
+      <img src="/static/logo.svg" alt=""/>
+{%- if error or page == "hello" %}
+      <h1>Static site mails with Hermód</h1>
+{% elif page == "endpoint" or page == "endpoint-success" %}
+      <h1>New endpoint</h1>
+{% endif -%}
+    </div>
+{% if error %}
+    <p class="error-message">{{ error }}</p>
+{% endif -%}
+{%- if page == "endpoint" %}
+    <form method="post" action="endpoint">
+      <div class="form-group">
+        <label for="address">Email address</label>
+        <input type="text" id="address" name="address" placeholder="mail@example.com"/>
+      </div>
+      <div class="form-group">
+        <label for="redirect">Redirection</label>
+        <input type="url" id="redirect" name="redirect" placeholder="http://example.com/thanks.html">
+      </div>
+      <input type="submit" value="Compute endpoint">
+    </form>
+{%- elif page == "endpoint-success" %}
+    <p>Endpoint has been generated. See administrator's mails or application log to grab it!</p>
+{%- elif page == "send" %}
+    <form method="post" name="send" onsubmit="document.send.action = document.send.endpoint.value; return true;">
+      <div class="form-group">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="{{ fields.name|e }}" placeholder="John Doe"/>
+      </div>
+      <div class="form-group">
+        <label for="from">Email address</label>
+        <input type="text" id="from" name="{{ fields.from|e }}" placeholder="mail@example.com"/>
+      </div>
+      <div class="form-group">
+        <label for="redirect">Redirection</label>
+        <input type="url" id="redirect" name="{{ fields.redirect|e }}" placeholder="http://example.com/thanks.html">
+      </div>
+      <div class="form-group">
+        <label for="endpoint">Endpoint</label>
+        <input type="url" id="endpoint" name="endpoint" placeholder="http://example.com/thanks.html">
+      </div>
+      <div class="form-group">
+        <label>Your mood</label>
+        <input type="radio" name="mood" value="good"> Good
+        <input type="radio" name="mood" value="bad"> Bad
+      </div>
+      <textarea name="message" placeholder="Your message"></textarea>
+      <input type="hidden" name="{{ fields.honeypot|e }}"/>
+      <input type="submit" value="Send message">
+    </form>
+{% endif -%}
   </body>
 </html>

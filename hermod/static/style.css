@@ -3,23 +3,82 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
 body {
   background-color: #fffff0;
+  font-family: Helvetica, Arial, sans;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  align-items: center; 
 }
-p {
-  margin-bottom: 2rem;
-  font-family: Helvetica, Arial, sans;
-  text-decoration: none;
-  color: #9d9d9d;
-  font-size: 1.6rem;
+
+h1, h2 {
+  margin: 1rem 0;
+  font-weight: normal;
+  text-decoration: none; 
 }
+
 #fork-me {
   position: absolute;
   top: 0;
   right: 0;
   border: 0;
+}
+
+/* Brand */
+.brand { display: flex; align-items: center; }
+.brand img { height: 6rem; }
+.brand h1 { font-size: 2rem; color: #9d9d9d;}
+.brand h2 { font-size: 1.6rem; color: #d50; }
+
+/* Page: Hello */
+.hello body {   justify-content: center; }
+.hello .brand { flex-direction: column; }
+.hello .brand img { height: 16rem; }
+
+/* Page: New endpoint */
+form, .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 500px) {
+  .form-group {
+    flex-direction: row;
+  }
+  
+  .form-group label {
+    width: 30%;
+  }
+  
+  .form-group input {
+    width: 70%;
+  }
+}
+
+/* Error */
+.error body { justify-content: center; }
+.error .brand { flex-direction: column; }
+.error .brand img { height: 12rem; }
+.error-message {
+  border: 1px solid #d50;
+  border-radius: .5rem;
+  color: #d50;
+  padding: 1rem .75rem .75rem;
+  position: relative;
+  font-size: 1.2rem;
+}
+.error-message::before {
+  content: "Error";
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: normal;
+  font-size: .75rem;
+  background: #d50;
+  color: #fff;
+  border-radius: .25rem;
+  padding: .15rem .3rem;
+  position: absolute;
+  top: -.65rem;
+  left: 1rem;
 }

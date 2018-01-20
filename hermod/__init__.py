@@ -1,14 +1,14 @@
 # coding=utf-8
 # (c) 2017, Rémi Dubois <packman@oxiame.net>
 #
-# This file is part of Hermod
+# This file is part of Hermód
 #
-# Hermod is free software: you can redistribute it and/or modify
+# Hermód is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Hermod is distributed in the hope that it will be useful,
+# Hermód is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -19,39 +19,109 @@
 """Hermod package root"""
 
 import os
-from flask import Flask, render_template, request
-from .utils import signature, Config, Crypto, aes_iv
+from pprint import pprint
+from flask import Flask, render_template, request, redirect
+from flask_mail import Mail, Message
+from .utils import signature, urlparse, Config, Crypto
 
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
-__all__ = ['APP']
+__all__ = ['app']
 
-APP = Flask(__name__)
-APP.logger.setLevel(0)
+app = Flask(__name__)
 
-config = Config(os.environ.get('HERMOD_CONFIG', None))
-# APP.config.<update>(config)
+app.config.from_object(Config)
+if 'HERMOD_CONFIG' in os.environ:
+  app.config.from_envvar('HERMOD_CONFIG')
+app.config['MAIL_DEFAULT_SENDER'] = 'Hermód <{0}>'.format(app.config.get('MAIL_USERNAME'))
+app.logger.setLevel(0)
 
-@APP.route('/')
+mail = Mail(app)
+crypto = Crypto(app.config.get_namespace('HERMOD_KEYS_'), app.config.get('HERMOD_USE_ENV'))
+
+@app.route('/')
 def placeholder():
-    return render_template('response.html')
-
-@APP.route('/endpoint', methods=['GET', 'POST'])
-def endpoint():
-    if request.method == 'POST':
-        crypto = Crypto(config.keyfiles)
-        cipher_iv = aes_iv()
-        ciphertext = crypto.encrypt(cipher_iv, request.form['address'])
-        digest = signature(request.form['address'], request.form['redirect'])
-        hmac = crypto.sign(digest)
-
-        text = 'Set the Hermod API endpoint to the following value:\n{0}send/{1}/{2}/{3}'
-        APP.logger.debug(text.format(request.host_url, cipher_iv, ciphertext, hmac))
-        # mail
-        return ''
+    return render_template('response.html', page='hello')
+  
+@app.route('/endpoint')
+def endpoint_form():
+    if app.config.get('HERMOD_NEW_ENDPOINT'):
+        return render_template('response.html', page='endpoint')
     else:
-        return render_template('response.html')
+        return render_template('response.html', error='Endpoint generation has been disabled by administrator'), 403
+  
+@app.route('/endpoint', methods=['POST'])
+def endpoint_action():
+    if app.config.get('HERMOD_NEW_ENDPOINT'):
+          endpoint = {
+            'address': request.form['address'],
+            'redirect': request.form['redirect'],
+            'domain': urlparse(request.form['redirect']).netloc,
+            'fields': app.config.get_namespace('HERMOD_FIELDS_')
+          }
 
-@APP.route('/send/<cipher_iv>/<ciphertext>/<hmac>', methods=['POST'])
-def handle(cipher_iv, ciphertext, hmac):
-    return '{0}\n{1}\n{2}\n{3}'.format(request.form, cipher_iv, ciphertext, hmac)
+          cipher_iv = crypto.aes_iv()
+          ciphertext = crypto.encrypt(cipher_iv, endpoint['address'])
+
+          digest = signature(endpoint['address'], endpoint['domain'])
+          hmac = crypto.sign(digest)
+
+          endpoint['url'] = '{0}send/{1}/{2}/{3}'.format(request.host_url, cipher_iv, ciphertext, hmac)
+
+          text = 'Endpoint generated for {address} from {domain}:\n{url}'.format_map(endpoint)
+          app.logger.info(text)
+
+          if app.config.get('HERMOD_ADMIN_EMAIL') not in [None, '']:
+                msg = Message('Your new Hermód endpoint')
+                msg.add_recipient(app.config.get('HERMOD_ADMIN_EMAIL'))
+                msg.html = render_template('mail.html', endpoint=endpoint)
+                mail.send(msg)
+
+          return render_template('response.html', page="endpoint-success")
+    else:
+          return render_template('response.html', error='Endpoint generation has been disabled by administrator'), 403
+
+@app.route('/send/')
+def send_form():
+    return render_template('response.html', page='send', fields=app.config.get_namespace('HERMOD_FIELDS_'))
+
+@app.route('/send/<cipher_iv>/<ciphertext>/<hmac>', methods=['POST'])
+def send_action(cipher_iv, ciphertext, hmac):
+    fields = app.config.get_namespace('HERMOD_FIELDS_')
+    form = request.form.copy()
+    
+    address = crypto.decrypt(cipher_iv, ciphertext)
+    redirect_to = form.pop(fields.get('redirect'), default=request.referrer)
+
+    honeypot = form.pop(fields.get('honeypot'), default=None)
+    if honeypot != '':
+        return render_template('response.html', error='Content tampered'), 403
+    
+    domain = urlparse(redirect_to).netloc
+    if domain is None:
+        domain = urlparse(request.referrer).netloc
+    digest = signature(address, domain)
+    if not crypto.verify(digest, hmac):
+        return render_template('response.html', error='Content tampered'), 403
+    
+    message = {
+        'origin': request.referrer,
+        'sender': form.pop(fields.get('name'), default=None),
+        'address': form.pop(fields.get('from'), default=None),
+        'administrator': app.config.get('HERMOD_ADMIN_EMAIL'),
+        'fields': form
+    }
+    
+    if message['address'] is None:
+        return render_template('response.html', error='A required field is missing: your email address'), 400
+    
+    msg = Message('New  message via Hermód')
+    msg.add_recipient(address)
+    if message['sender'] is not None:
+        msg.reply_to = (message['sender'], message['address'])
+    else :
+        msg.reply_to = message['address']
+    msg.html = render_template('mail.html', message=message)
+    mail.send(msg)
+    
+    return redirect(redirect_to)

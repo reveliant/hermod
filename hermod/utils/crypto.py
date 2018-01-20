@@ -1,14 +1,14 @@
 # coding=utf-8
 # (c) 2017, Rémi Dubois <packman@oxiame.net>
 #
-# This file is part of Hermod
+# This file is part of Hermód
 #
-# Hermod is free software: you can redistribute it and/or modify
+# Hermód is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Hermod is distributed in the hope that it will be useful,
+# Hermód is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -18,10 +18,7 @@
 
 """Cryptographic classes for Hermod"""
 
-from __future__ import (absolute_import, division, print_function)
-
 import sys
-from io import BufferedReader
 from base64 import b64decode, urlsafe_b64encode, urlsafe_b64decode
 from binascii import Error as PaddingError
 
@@ -30,28 +27,29 @@ from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from Crypto.Hash import HMAC, SHA256
 
-__all__ = ["Crypto", "aes_iv"]
+__all__ = ["Crypto"]
 
 class Keyring(object): # pylint: disable=too-few-public-methods
     """Keyring object to manipulate keys"""
 
     _keys = dict()
 
-    def __init__(self, keys):
+    def __init__(self, keys, use_env):
         for keyname in keys:
-            self.load_key(keyname, keys[keyname])
+            self.load_key(keyname, keys[keyname], use_env)
 
-    def load_key(self, keyname, key):
+    def load_key(self, keyname, key, use_env):
         """Load 'key' file content into 'keyname' slot"""
-        if isinstance(key, BufferedReader):
-            pkey = key.read()
-            key.close()
+        if use_env:
+            b64key = str(key)
         else:
-            pkey = str(key)
+            pkey = open(key)
+            b64key = pkey.read()
+            pkey.close()
         try:
-            self._keys[keyname] = b64decode(pkey)
+            self._keys[keyname] = b64decode(b64key)
         except PaddingError:
-            print('Invalid key padding: {0} {1}'.format(keyname, pkey), file=sys.stdout)
+            print('Invalid key padding: {0} {1}'.format(keyname, b64key), file=sys.stderr)
 
     def __getattr__(self, attr):
         return self._keys[attr]
@@ -64,9 +62,9 @@ class Keyring(object): # pylint: disable=too-few-public-methods
 
 class Crypto(object):
     """Cryptography handler for Hermod"""
-    def __init__(self, keys):
+    def __init__(self, keys, use_env):
         self._ready = False
-        self._keys = Keyring(keys)
+        self._keys = Keyring(keys, use_env)
 
         if 'aes' in self._keys and 'mac' in self._keys:
             self._ready = True
@@ -114,7 +112,8 @@ class Crypto(object):
                 # Message has been tempered of MAC key invalid
                 return False
 
-def aes_iv(size=8):
-    """Generate cryptographic secure pseudo-random number (CSPRN) for initialisation vector"""
-    bytes_iv = Random.get_random_bytes(size)
-    return urlsafe_b64encode(bytes_iv).decode('utf-8')
+    @staticmethod
+    def aes_iv(size=8):
+        """Generate cryptographic secure pseudo-random number (CSPRN) for initialisation vector"""
+        bytes_iv = Random.get_random_bytes(size)
+        return urlsafe_b64encode(bytes_iv).decode('utf-8')
