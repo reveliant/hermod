@@ -1,1 +1,1 @@
-web: gunicorn hermod:app --log-gile -
+web: gunicorn hermod:app
