@@ -43,3 +43,11 @@ class Config:
     
     # Allow new endpoint generation
     HERMOD_NEW_ENDPOINT = os.environ.get('HERMOD_NEW_ENDPOINT', True)
+    
+    # Flask-Mail configuration
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', '127.0.0.1')
+    MAIL_PORT = os.environ.get('MAIL_PORT', 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', False)
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', False)
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', None)
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', None)
