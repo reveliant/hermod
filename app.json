@@ -7,25 +7,47 @@
     "keywords": [ "python", "smtp" ],
     "addons": [ "mailgun" ],
     "env": {
-        "HERMOD_AES_KEY": {
+        "HERMOD_USE_ENV": {
+            "description": "Load keys from environment variables instead of files",
+            "value": "yes"
+        },
+        "HERMOD_KEYS_AES": {
             "description": "AES-128 key in base64",
-            "value": ""
+            "generator": "secret"
         },
-        "HERMOD_MAC_KEY": {
+        "HERMOD_KEYS_MAC": {
             "description": "HMAC key in base64",
-            "value": ""
+            "generator": "secret"
         },
-        "HERMOD_REDIRECT": {
+        "HERMOD_FIELDS_NAME": {
+            "description": "Sender name field name",
+            "value": "name",
+            "required": false
+        },
+        "HERMOD_FIELDS_FROM": {
+            "description": "Sender email address field name",
+            "value": "from",
+            "required": false
+        },
+        "HERMOD_FIELDS_REDIRECT": {
             "description": "Redirect URL field name",
-            "value": "url"
+            "value": "url",
+            "required": false
         },
-        "HERMOD_HONEYPOT": {
+        "HERMOD_FIELDS_HONEYPOT": {
             "description": "Honeypot field name",
-            "value": "hermod"
+            "value": "hermod",
+            "required": false
         },
-        "HERMOD_FROM": {
-            "description": "<From> email address",
-            "value": "hermod@sandbox-0000.mailgun.com"
+        "HERMOD_ADMIN_EMAIL": {
+            "description": "Administrator email address",
+            "value": "",
+            "required": false
+        },
+        "HERMOD_NEW_ENDPOINT": {
+            "description": "Enable new endpoints generation",
+            "value": "yes",
+            "required": false
         }
     }
 }

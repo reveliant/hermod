@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # coding=utf-8
 # (c) 2017, Rémi Dubois <packman@oxiame.net>
 #
@@ -16,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hermod.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Hermod resources"""
+"""Hermod daemon starter"""
 
-from __future__ import (absolute_import, division, print_function)
+from hermod import app
+
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,14 +1,14 @@
 # coding=utf-8
 # (c) 2017, Rémi Dubois <packman@oxiame.net>
 #
-# This file is part of Hermod
+# This file is part of Hermód
 #
-# Hermod is free software: you can redistribute it and/or modify
+# Hermód is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Hermod is distributed in the hope that it will be useful,
+# Hermód is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -18,26 +18,16 @@
 
 """Hermod various utilities"""
 
-from __future__ import (absolute_import, division, print_function)
+try: # Python 3
+  from urllib.parse import urlparse
+except ImportError: # Python 2
+  from urlparse import urlparse
 
-__all__ = ['APPNAME', 'Attributes', 'signature']
+from .config import Config
+from .crypto import Crypto
 
-APPNAME = 'hermod'
+__all__ = ['signature', 'urlparse', 'Config', 'Crypto']
 
-class Attributes(dict):
-    """SimpleNamespace alternative"""
-    def __getattr__(self, attr):
-        return self[attr]
-
-    def __setattr__(self, attr, value):
-        self[attr] = value
-
-    def __delattr__(self, attr):
-        del self[attr]
-
-    def __copy__(self):
-        return type(self)(self)
-
-def signature(address=None, url=None):
+def signature(address=None, domain=None):
     """Signature string to compute digest from"""
-    return 'address: {0}\nredirect: {1}'.format(address, url)
+    return '{0}\n{1}'.format(address, domain)

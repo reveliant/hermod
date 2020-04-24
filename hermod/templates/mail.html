@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Hermód</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: .85rem;
+        height: 100% !important;
+        line-height: 1.6;
+        background: #f0f0f0;
+        padding: 1rem;
+      }
+      article, section { border-radius: .25em; }
+      article {
+        background: repeating-linear-gradient(-45deg, #d50 0, #d50 1em, #fff 0, #fff 2em,
+                  #58a 0, #58a 3em, #fff 0, #fff 4em);
+        padding: 1rem;
+      }
+      section { background: #fff; padding: 2rem; }
+      h1, h2 { margin: 0; }
+      h1 { font-size: 2rem; color: #58a; }
+      h2 { font-size: 1.2rem; color: #d50; }
+      label { font-size: .9rem; font-weight: bold; display: block; margin: .5rem 0 0; }
+      pre { white-space: pre-wrap; margin: 0; font-family: inherit; }
+      footer { text-align: center; margin: 1rem 0; }
+      footer p { margin: .25rem 0;  }
+    </style>
+  </head>
+  <body>
+    <article>
+      <section>
+{%- if endpoint is defined %}
+        <h1>Your new Hermód endpoint</h1>
+        <h2>Requested endpoint for {{ endpoint.address|e }}.</h2>
+        <p>Ensure the following elements are in your form:</p>
+        <pre style="font-family: monospace">
+&lt;form method="post" action="{{ endpoint.url|e }}"&gt;
+    [... your fields ...]
+    &lt;input type="hidden" name="{{ endpoint.fields.honeypot|e }}" value=""&gt;
+    &lt;input type="hidden" name="{{ endpoint.fields.redirect|e }}" value="{{ endpoint.redirect|e }}"&gt;
+&lt;/form&gt;</pre>
+{%- elif message is defined %}
+        <h1>You have a new message</h1>
+        <h2>From: {{ message.sender|e }} &lt;{{ message.address|e }}&gt;</h2>
+        <h2>Via: {{ message.origin|e }}</h2>
+{%- for key, value in message.fields.items() %}
+        <div>
+          <label>{{ key|e }}</label>
+          <pre>{{ value|e }}</pre>
+        </div>
+{%- endfor %}
+{%- endif %}
+      </section>
+    </article>
+    <footer>
+{%- if endpoint is defined %}
+      <p>You have received this email because your address is defined as administrative contact for this Hermód instance.</p>
+      <p>If you don't want to received further messages, please change your Hermod configuration.</p>
+{%- elif message is defined %}
+      <p>You have received this email because a valid endpoint for this Hermód instance is pointing to it.</p>
+      <p>If you don't want to receive further messages, please change your endpoints or ask the administrator to revoke the keys.</p>
+{%- endif %}
+    </footer>
+  </body>
+</html>
