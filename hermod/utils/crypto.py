@@ -44,7 +44,7 @@ class Keyring(object): # pylint: disable=too-few-public-methods
             hexkey = str(key)
         else:
             pkey = open(key)
-            hexkey = pkey.read()
+            hexkey = pkey.read().replace('\n','')
             pkey.close()
         try:
             self._keys[keyname] = unhexlify(hexkey)
