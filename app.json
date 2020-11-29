@@ -3,7 +3,7 @@
     "description": "Adds mail sending capability to your static sites. Privacy-aware, protects your email address from eavesdropper.",
     "image": "heroku/python",
     "repository": "https://github.com/reveliant/hermod",
-    "logo": "https://github.com/reveliant/hermod/blob/master/logo.png?raw=true",
+    "logo": "https://github.com/reveliant/hermod/blob/master/hermod/static/logo.png?raw=true",
     "keywords": [ "python", "smtp" ],
     "addons": [ "mailgun" ],
     "env": {
