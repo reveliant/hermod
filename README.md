@@ -4,109 +4,103 @@
 
 Hermód adds mail sending capability to your static sites (e.g. "Contact us" forms).
 
-It is privacy-aware, protecting your email address from eavesdropper without any account creation.
+It is privacy-aware, protecting your email address from eavesdropper without any account creation, adopting a stateless design
 
-This project is intended to run on a [Heroku](https://heroku.com/) Python dyno with the [Mailgun](https://elements.heroku.com/addons/mailgun) add-on (both of them are free of charge for the expected limited usage) but can also run with any Python 2 or 3 installation (with pip) and a SMTP server.
+This project is intended to run on a [Heroku](https://heroku.com/) Python dyno with the [Mailgun](https://elements.heroku.com/addons/mailgun) add-on (both of them are free of charge for the expected limited usage) but can also run with any Python 3 installation (with pip) and a SMTP server.
 
 ## Quick setup guide
 
-1. Clone repository on your computer and install Python dependancies:
+1. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+2. (Optional) Customize the `HERMOD_ADMIN_EMAIL` variable with administrator email address
+3. Go to `/endpoint` on your new Hermód instance and fill the form
+4. Look at application logs (or administrator mails if you set the variable):
 
-   ``` bash
-   pip install -r requirements.txt
-   ```
-   
-2. Generate AES and MAC keys:
-
-   ``` bash
-   openssl rand -base64 16 | tee aes.key
-   openssl rand -base64 16 | tee mac.key
-   chmod go-rwx aes.key mac.key
+    ```
+    Endpoint generated for contact@example.com from example.com:
+    http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
     ```
 
-3. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-4. On Heroku, customize `HERMOD_*` variables (at least `HERMOD_AES_KEY` and `HERMOD_MAC_KEY`).
+5. Set the generated endpoint adress as target for your form:
 
-You are now ready to handle requests.
+    ```html
+    <form
+        action="http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ="
+        method="POST">
+        <p><input type="email" name="from" placeholder="Your email address"/></p>
+        <p><textarea name="message" placehold="Your message"></textarea></p>
+        <input type="hidden" name="redirect" value="http://domain.com/gotothispageaftersubmition"/>
+        <input type="hidden" name="hermod" value=""/>
+        <p><input type="submit" value="Send"></p>
+    </form>
+    ```
 
-### Setting up a new form
-
-On your computer, generate a token for new form:
-
-```bash
-python hermod.py 'contact@example.com' 'http://example.com/gotothispageaftersubmition'
-Set the Hermod API endpoint to the following value:
-/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
-```
-
-You can now fill your HTML form:
-
-```html
-<form
-      action="http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ="
-      method="POST">
-    <p><input type="email" name="from" placeholder="Your email address"/></p>
-    <p><textarea name="message" placehold="Your message"></textarea></p>
-    <input type="hidden" name="redirect" value="http://domain.com/gotothispageaftersubmition"/>
-    <input type="hidden" name="hermod" value=""/>
-    <p><input type="submit" value="Send"></p>
-</form>
-```
+6. You should now be ready to handle requests.
 
 ## Complete guide and reference
 
-Hermód reads its configuration from two sources (the later taking precedence):
+Hermód reads its configuration from two sources:
 
 * environment variables;
-* configuration file.
+* configuration file, if the `HERMOD_CONFIG` environment variable points to it.
 
-### Environment variables
+### Configuration variables (config.py)
 
-* Cryptographic keys (base64-encoded strings):
-    * `HERMOD_AES_KEY`: for encryption,
-    * `HERMOD_MAC_KEY`: for signature;
-* Server:
-    * `PORT`: HTTP server port number
+* Various settings:
+    * `HERMOD_USE_ENV`: keys variables contain hex-encoded key values, not key filenames (default False),
+    * `HERMOD_ADMIN_EMAIL`: administrator email address (for new endpoint notification in forwarded messages, default None),
+    * `HERMOD_NEW_ENDPOINT`: enable `/endpoint` and allow new endpoint generation (default True);
+* Cryptographic keys (hexadecimal-encoded strings):
+    * `HERMOD_KEYS_AES`: encryption key value or filename,
+    * `HERMOD_KEYS_MAC`: authentication key value or filename;
 * Form fields names:
-    * `HERMOD_REDIRECT`: name of redirection URL field,
-    * `HERMOD_HONEYPOT`: name of honeypot field which must remain blank to avoid spam;
-* SMTP settings:
-    * `HERMOD_FROM`: 'From' address. No reply is expected from such address.
-    * `MAILGUN_SMTP_SERVER`: server name
-    * `MAILGUN_SMTP_PORT`: server port
-    * `MAILGUN_SMTP_LOGIN`: login
-    * `MAILGUN_SMTP_PASSWORD`: password
-    * You are not tied to Mailgun service: those variables names are use to speed up Heroku configuration.
+    * `HERMOD_FIELDS_NAME`: sender name field,
+    * `HERMOD_FIELDS_FROM`: sender email address field,
+    * `HERMOD_FIELDS_REDIRECT`: redirection URL field,
+    * `HERMOD_FIELDS_HONEYPOT`: honeypot field which must remain blank to not be considered as spam;
+* Main [Flask-Mail](https://pythonhosted.org/Flask-Mail/) settings:
+    * `MAIL_SERVER`: server address (default 127.0.0.1)
+    * `MAIL_PORT`: server port (default 25)
+    * `MAIL_USE_TLS`: use StartTLS (default False)
+    * `MAIL_USE_SSL`: use SSL / TLS (default False)
+    * `MAIL_USERNAME`: username
+    * `MAIL_PASSWORD`: password (default None)
 
-On Heroku setup, only `HERMOD_*` variables have to be set.
+On Heroku setup, variables are set on first deploy, but you might want to replace generated keys, or set mail settings to your own SMTP server.
 
 ### Configuration file
 
-The configuration file is expected to be on the current directory, on user configuration directory or on system-wide configuration directory (e.g. `~/.config/hermod/` and `/etc/hermod/` on Linux for the latest).
-Default filename is `hermod.cfg`.
+The configuration file is loaded when the `HERMOD_CONFIG` environment variable is set.
+Beware that indicated path is relative to the module subdirectory, i.e. a `hermod.cfg` configuration file alongside this README file shoud be referenced by `HERMOD_CONFIG="../hermod.cfg"`.
 
-Here is an sample config file for reference. Each section and parameter are optional, and defaults values are show.
+The configuration file corresponding to default configuration is provided as reference:
 
 ```ini
-[Keys]
-AES = aes.key
-MAC = hmac.key
+# Keys are loaded from environment instead of from files
+HERMOD_USE_ENV = False
 
-[Server]
-Port = 38394
+# Key files dictionnary
+HERMOD_KEYS_AES = 'aes.key'
+HERMOD_KEYS_MAC = 'mac.key'
 
-[Fields]
-From = from
-Name = name
-Redirect = url
-Honeypot = hermod
+# Metadata fields names
+HERMOD_FIELDS_NAME = 'name'
+HERMOD_FIELDS_FROM = 'from'
+HERMOD_FIELDS_REDIRECT = 'url'
+HERMOD_FIELDS_HONEYPOT = 'hermod'
 
-[SMTP]
-From = hermod@localhost
-Server = localhost
-Port = 25
-Login = 
-Password = 
+# Administrator email
+HERMOD_ADMIN_EMAIL = None
+
+# Allow new endpoint generation
+HERMOD_NEW_ENDPOINT = True
+    
+# Flask-Mail configuration
+MAIL_SERVER = '127.0.0.1'
+MAIL_PORT = 25
+MAIL_USE_TLS = False
+MAIL_USE_SSL = False
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
 ```
 
 ### Cryptography usage
@@ -117,32 +111,26 @@ Password =
 * ensure destination address privacy;
 * avoid spam from plaintext address in HTML pages.
 
-#### Signature
+#### Authentication
 
-* email address and redirection URL are signed with HMAC (SHA-256);
+* destination email address and redirection URL are sealed with HMAC (SHA-256);
 * ensure parameters integrity;
 * avoid insecure redirection.
 
-### Command line options
+### Endpoint format
 
-    hermod.py [-he] [-c FILE] {EMAIL ADDRESS} {REDIRECT_URL}
-    hermod.py [-he] [-c FILE] -d [-p PORT]
+Endpoint URL contains cryptographic parameter and messages:
+`/<Cipher IV>/<Ciphered destination email address>/<MAC>`
 
-#### General options
+### Command line tools
 
-* `-h|--help` : show help message
-* `-e|--env`: use only environment variables and no configuration file
-* `-c|--conf FILE`: use FILE instead of default configuration file name and path
+Generate AES and MAC keys:
 
-#### Token generation options
-
-* `EMAIL ADDRESS`: messages will be send to this address
-* `REDIRECT_URL`: client will be redirected to that URL after submission
-
-#### Server options
-
-* `-d|--daemon`: start as daemon and do not compute token
-* `-p|--port PORT`: listen on port PORT
+   ``` bash
+   openssl rand -hex 16 | tee aes.key
+   openssl rand -hex 16 | tee mac.key
+   chmod go-rwx aes.key mac.key
+    ```
 
 ## License
 
