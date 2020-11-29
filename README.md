@@ -1,6 +1,6 @@
-<img src="hermod/static/logo.png?raw=true" type="image/png"/>
-
 # Hermód
+
+![Hermód logo](hermod/static/logo.png?raw=true)
 
 Hermód adds mail sending capability to your static sites (e.g. "Contact us" forms).
 
@@ -13,15 +13,15 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 1. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 2. (Optional) Customize the `HERMOD_ADMIN_EMAIL` variable with administrator email address
 3. Once deployed, set `MAIL_USERNAME` and `MAIL_PASSWORD`variables to the values of `MAILGUN_SMTP_LOGIN` and `MAILGUN_SMTP_PASSWORD`
-3. Go to `/endpoint` on your new Hermód instance and fill the form
-4. Look at application logs (or administrator mails if you set the variable):
+4. Go to `/endpoint` on your new Hermód instance and fill the form
+5. Look at application logs (or administrator mails if you set the variable):
 
     ```
     Endpoint generated for contact@example.com from example.com:
     http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
     ```
 
-5. Set the generated endpoint adress as target for your form:
+6. Set the generated endpoint adress as target for your form:
 
     ```html
     <form
@@ -35,7 +35,7 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
     </form>
     ```
 
-6. You should now be ready to handle requests.
+7. You should now be ready to handle requests.
 
 ## Complete guide and reference
 
@@ -47,24 +47,24 @@ Hermód reads its configuration from two sources:
 ### Configuration variables (config.py)
 
 * Various settings:
-    * `HERMOD_USE_ENV`: keys variables contain hex-encoded key values, not key filenames (default False),
-    * `HERMOD_ADMIN_EMAIL`: administrator email address (for new endpoint notification in forwarded messages, default None),
-    * `HERMOD_NEW_ENDPOINT`: enable `/endpoint` and allow new endpoint generation (default True);
+  * `HERMOD_USE_ENV`: keys variables contain hex-encoded key values, not key filenames (default False),
+  * `HERMOD_ADMIN_EMAIL`: administrator email address (for new endpoint notification in forwarded messages, default None),
+  * `HERMOD_NEW_ENDPOINT`: enable `/endpoint` and allow new endpoint generation (default True);
 * Cryptographic keys (hexadecimal-encoded strings):
-    * `HERMOD_KEYS_AES`: encryption key value or filename,
-    * `HERMOD_KEYS_MAC`: authentication key value or filename;
+  * `HERMOD_KEYS_AES`: encryption key value or filename,
+  * `HERMOD_KEYS_MAC`: authentication key value or filename;
 * Form fields names:
-    * `HERMOD_FIELDS_NAME`: sender name field,
-    * `HERMOD_FIELDS_FROM`: sender email address field,
-    * `HERMOD_FIELDS_REDIRECT`: redirection URL field,
-    * `HERMOD_FIELDS_HONEYPOT`: honeypot field which must remain blank to not be considered as spam;
+  * `HERMOD_FIELDS_NAME`: sender name field,
+  * `HERMOD_FIELDS_FROM`: sender email address field,
+  * `HERMOD_FIELDS_REDIRECT`: redirection URL field,
+  * `HERMOD_FIELDS_HONEYPOT`: honeypot field which must remain blank to not be considered as spam;
 * Main [Flask-Mail](https://pythonhosted.org/Flask-Mail/) settings:
-    * `MAIL_SERVER`: server address (default 127.0.0.1)
-    * `MAIL_PORT`: server port (default 25)
-    * `MAIL_USE_TLS`: use StartTLS (default False)
-    * `MAIL_USE_SSL`: use SSL / TLS (default False)
-    * `MAIL_USERNAME`: username
-    * `MAIL_PASSWORD`: password (default None)
+  * `MAIL_SERVER`: server address (default 127.0.0.1)
+  * `MAIL_PORT`: server port (default 25)
+  * `MAIL_USE_TLS`: use StartTLS (default False)
+  * `MAIL_USE_SSL`: use SSL / TLS (default False)
+  * `MAIL_USERNAME`: username
+  * `MAIL_PASSWORD`: password (default None)
 
 On Heroku setup, variables are set on first deploy, but you might want to replace generated keys, or set mail settings to your own SMTP server.
 
@@ -94,7 +94,7 @@ HERMOD_ADMIN_EMAIL = None
 
 # Allow new endpoint generation
 HERMOD_NEW_ENDPOINT = True
-    
+
 # Flask-Mail configuration
 MAIL_SERVER = '127.0.0.1'
 MAIL_PORT = 25
