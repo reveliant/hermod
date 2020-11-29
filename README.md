@@ -126,11 +126,11 @@ Endpoint URL contains cryptographic parameter and messages:
 
 Generate AES and MAC keys:
 
-   ``` bash
-   openssl rand -hex 16 | tee aes.key
-   openssl rand -hex 16 | tee mac.key
-   chmod go-rwx aes.key mac.key
-    ```
+``` bash
+openssl rand -hex 16 | tee aes.key
+openssl rand -hex 16 | tee mac.key
+chmod go-rwx aes.key mac.key
+```
 
 ## License
 
