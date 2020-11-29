@@ -114,9 +114,11 @@ MAIL_PASSWORD = None
 
 #### Authentication
 
-* destination email address and redirection URL are sealed with HMAC (SHA-256);
+* destination email address and redirection domain name are sealed with HMAC (SHA-256);
 * ensure parameters integrity;
 * avoid insecure redirection.
+
+Note that if a redirection URL is not provided (no `HERMOD_FIELDS_REDIRECT` field), referrer will be use and its domain checked againts insecure redirection.
 
 ### Endpoint format
 
