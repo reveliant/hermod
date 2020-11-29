@@ -110,6 +110,9 @@ def send_action(cipher_iv, ciphertext, hmac):
         'administrator': app.config.get('HERMOD_ADMIN_EMAIL'),
         'fields': form
     }
+
+    text = 'Received message from {m.sender} <{m.address}> for {a} via {m.origin}'.format_map(m=message, a=address)
+    app.logger.info(text)
     
     if message['address'] is None:
         return render_template('response.html', error='A required field is missing: your email address'), 400
