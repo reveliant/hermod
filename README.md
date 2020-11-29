@@ -12,6 +12,7 @@ This project is intended to run on a [Heroku](https://heroku.com/) Python dyno w
 
 1. [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 2. (Optional) Customize the `HERMOD_ADMIN_EMAIL` variable with administrator email address
+3. Once deployed, set `MAIL_USERNAME` and `MAIL_PASSWORD`variables to the values of `MAILGUN_SMTP_LOGIN` and `MAILGUN_SMTP_PASSWORD`
 3. Go to `/endpoint` on your new Hermód instance and fill the form
 4. Look at application logs (or administrator mails if you set the variable):
 

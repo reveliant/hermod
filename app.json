@@ -48,6 +48,31 @@
             "description": "Enable new endpoints generation",
             "value": "yes",
             "required": false
+        },
+        "MAIL_SERVER": {
+            "description": "Mail server address",
+            "value": "smtp.mailgun.org",
+            "required": false
+        },
+        "MAIL_PORT": {
+            "description": "Mail server port",
+            "value": "587",
+            "required": false
+        },
+        "MAIL_USE_TLS": {
+            "description": "Use StartTLS or TLS",
+            "value": "yes",
+            "required": false
+        },
+        "MAIL_USERNAME": {
+            "description": "Mail server username",
+            "value": "**Copy MAILGUN_SMTP_LOGIN value after deployement**",
+            "required": false
+        },
+        "MAIL_PASSWORD": {
+            "description": "Mail server password",
+            "value": "**Copy MAILGUN_SMTP_PASSWORD value after deployement**",
+            "required": false
         }
     }
 }
