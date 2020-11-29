@@ -58,10 +58,10 @@
     <footer>
 {%- if endpoint is defined %}
       <p>You have received this email because your address is defined as administrative contact for this Hermód instance.</p>
-      <p>If you don't want to received further messages, please change your Hermod configuration.</p>
+      <p>If you don't want to received further messages, please change your Hermód configuration.</p>
 {%- elif message is defined %}
       <p>You have received this email because a valid endpoint for this Hermód instance is pointing to it.</p>
-      <p>If you don't want to receive further messages, please change your endpoints or ask the administrator to revoke the keys.</p>
+      <p>If you don't want to receive further messages, please change your endpoints or ask the administrator ({{ message.administrator|e }}) to revoke the keys.</p>
 {%- endif %}
     </footer>
   </body>
