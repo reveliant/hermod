@@ -19,8 +19,8 @@
 """Cryptographic classes for Hermod"""
 
 import sys
-from base64 import b64decode, urlsafe_b64encode, urlsafe_b64decode
-from binascii import Error as PaddingError
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from binascii import unhexlify, Error as PaddingError
 
 from Crypto import Random
 from Crypto.Cipher import AES
@@ -41,15 +41,15 @@ class Keyring(object): # pylint: disable=too-few-public-methods
     def load_key(self, keyname, key, use_env):
         """Load 'key' file content into 'keyname' slot"""
         if use_env:
-            b64key = str(key)
+            hexkey = str(key)
         else:
             pkey = open(key)
-            b64key = pkey.read()
+            hexkey = pkey.read()
             pkey.close()
         try:
-            self._keys[keyname] = b64decode(b64key)
+            self._keys[keyname] = unhexlify(hexkey)
         except PaddingError:
-            print('Invalid key padding: {0} {1}'.format(keyname, b64key), file=sys.stderr)
+            print('Invalid key padding: {0} {1}'.format(keyname, hexkey), file=sys.stderr)
 
     def __getattr__(self, attr):
         return self._keys[attr]
