@@ -111,7 +111,8 @@ def send_action(cipher_iv, ciphertext, hmac):
         'fields': form
     }
 
-    text = 'Received message from {m.sender} <{m.address}> for {a} via {m.origin}'.format_map(m=message, a=address)
+    text = 'Received message from {sender} <{address}> via {origin}'.format_map(message)
+    text += ' for {0}'.format(address)
     app.logger.info(text)
     
     if message['address'] is None:
