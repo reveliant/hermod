@@ -19,34 +19,9 @@
             "description": "HMAC key in base64",
             "generator": "secret"
         },
-        "HERMOD_FIELDS_NAME": {
-            "description": "Sender name field name",
-            "value": "name",
-            "required": false
-        },
-        "HERMOD_FIELDS_FROM": {
-            "description": "Sender email address field name",
-            "value": "from",
-            "required": false
-        },
-        "HERMOD_FIELDS_REDIRECT": {
-            "description": "Redirect URL field name",
-            "value": "url",
-            "required": false
-        },
-        "HERMOD_FIELDS_HONEYPOT": {
-            "description": "Honeypot field name",
-            "value": "hermod",
-            "required": false
-        },
         "HERMOD_ADMIN_EMAIL": {
             "description": "Administrator email address",
             "value": "",
-            "required": false
-        },
-        "HERMOD_NEW_ENDPOINT": {
-            "description": "Enable new endpoints generation",
-            "value": "yes",
             "required": false
         },
         "MAIL_SERVER": {
