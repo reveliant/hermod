@@ -19,7 +19,7 @@
 """Hermod package root"""
 
 import os
-from smtplib import SMTPException
+from smtplib import SMTPResponseException
 from pprint import pprint
 from flask import Flask, render_template, request, redirect
 from flask_mail import Mail, Message
@@ -75,11 +75,14 @@ def endpoint_action():
                 msg = Message('Your new Hermód endpoint')
                 msg.add_recipient(app.config.get('HERMOD_ADMIN_EMAIL'))
                 msg.html = render_template('mail.html', endpoint=endpoint)
+                app.logger.info('Sending endpoint informations to {0}'.format(app.config.get('HERMOD_ADMIN_EMAIL')))
 
                 try:
                     mail.send(msg)
-                except (SMTPException, ConnectionError) as e:
-                    app.logger.error("SMTP error: {e.errno} {e.strerror}".format(e=e))
+                except ConnectionError as e:
+                    app.logger.error("Connection error: {e.errno} {e.strerror}".format(e=e))
+                except SMTPResponseException as e:
+                    app.logger.error("SMTP error: {e.smtp_code} {e.smtp_error}".format(e=e))
 
           return render_template('response.html', page="endpoint-success")
     else:
@@ -133,7 +136,9 @@ def send_action(cipher_iv, ciphertext, hmac):
 
     try:
         mail.send(msg)
-    except (SMTPException, ConnectionError) as e:
-        app.logger.error("SMTP error: {e.errno} {e.strerror}".format(e=e))
+    except ConnectionError as e:
+        app.logger.error("Connection error: {e.errno} {e.strerror}".format(e=e))
+    except SMTPResponseException as e:
+        app.logger.error("SMTP error: {e.smtp_code} {e.smtp_error}".format(e=e))
     
     return redirect(redirect_to)
