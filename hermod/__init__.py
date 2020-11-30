@@ -19,6 +19,7 @@
 """Hermod package root"""
 
 import os
+import logging
 from smtplib import SMTPResponseException
 from pprint import pprint
 from flask import Flask, render_template, request, redirect
@@ -35,6 +36,7 @@ app.config.from_object(Config)
 if 'HERMOD_CONFIG' in os.environ:
   app.config.from_envvar('HERMOD_CONFIG')
 app.config['MAIL_DEFAULT_SENDER'] = 'Hermód <{0}>'.format(app.config.get('MAIL_USERNAME'))
+app.logger.setLevel(logging.INFO)
 
 mail = Mail(app)
 crypto = Crypto(app.config.get_namespace('HERMOD_KEYS_'), app.config.get('HERMOD_USE_ENV'))
