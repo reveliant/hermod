@@ -127,8 +127,9 @@ def send_action(cipher_iv, ciphertext, hmac):
         msg.reply_to = message['address']
     msg.html = render_template('mail.html', message=message)
 
-    text = 'Received message from {m.sender} <{m.address}> via {m.origin} to {addr}'
-    app.logger.info(text.format(m=message,addr=address))
+    text = 'Received message from {sender} <{address}> via {origin}'.format_map(message)
+    text += ' to {0}'.format(address)
+    app.logger.info(text)
 
     try:
         mail.send(msg)
