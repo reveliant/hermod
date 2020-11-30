@@ -19,6 +19,7 @@
 """Hermod package root"""
 
 import os
+from smtplib import SMTPDataError
 from pprint import pprint
 from flask import Flask, render_template, request, redirect
 from flask_mail import Mail, Message
@@ -110,10 +111,6 @@ def send_action(cipher_iv, ciphertext, hmac):
         'administrator': app.config.get('HERMOD_ADMIN_EMAIL'),
         'fields': form
     }
-
-    text = 'Received message from {sender} <{address}> via {origin}'.format_map(message)
-    text += ' for {0}'.format(address)
-    app.logger.info(text)
     
     if message['address'] is None:
         return render_template('response.html', error='A required field is missing: your email address'), 400
@@ -125,6 +122,14 @@ def send_action(cipher_iv, ciphertext, hmac):
     else :
         msg.reply_to = message['address']
     msg.html = render_template('mail.html', message=message)
-    mail.send(msg)
+
+    try:
+        mail.send(msg)
+    except SMTPDataError as e:
+        app.logger.error(e.strerror)
+    finally:
+        text = 'Received message from {sender} <{address}> via {origin}'.format_map(message)
+        text += ' for {0}'.format(address)
+        app.logger.info(text)
     
     return redirect(redirect_to)
