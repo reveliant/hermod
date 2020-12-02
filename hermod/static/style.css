@@ -9,13 +9,13 @@ body {
   font-family: Helvetica, Arial, sans;
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
 }
 
 h1, h2 {
   margin: 1rem 0;
   font-weight: normal;
-  text-decoration: none; 
+  text-decoration: none;
 }
 
 #fork-me {
@@ -40,19 +40,65 @@ h1, h2 {
 form, .form-group {
   display: flex;
   flex-direction: column;
+  width: 50%;
 }
 
 @media screen and (min-width: 500px) {
   .form-group {
     flex-direction: row;
-  }
-  
-  .form-group label {
-    width: 30%;
-  }
-  
-  .form-group input {
+    line-height: 1.5;
+    padding-top: 1.0em;
+    padding-left: 10%;
     width: 70%;
+  }
+
+  .form-group label {
+    width: 22%;
+  }
+
+  .form-group input {
+    width: 78%;
+  }
+
+  .radio-group {
+    flex-direction: row;
+    line-height: 1.5;
+    padding-top: 1.0em;
+    padding-left: 10%;
+    width: 70%;
+  }
+
+  .radio-group label {
+     width: 30%;
+  }
+  .radio-group input {
+    text-align: left;
+    width: 10%;
+  }
+
+  .text-group {
+    flex-direction: row;
+    padding-top: 1.5em;
+    padding-left: 10%;
+    text-align: center;
+    width: 70%;
+  }
+
+  .text-group textarea {
+    width: 100%;
+  }
+
+  .submit-group {
+    flex-direction: row;
+    line-height: 1.5;
+    padding-top: 1.5em;
+    padding-left: 10%;
+    text-align: center;
+    width: 70%;
+  }
+
+  .submit-group input {
+    width: 100%;
   }
 }
 
