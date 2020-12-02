@@ -35,7 +35,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 if 'HERMOD_CONFIG' in os.environ:
   app.config.from_envvar('HERMOD_CONFIG')
-app.config['MAIL_DEFAULT_SENDER'] = 'Hermód <{0}>'.format(app.config.get('MAIL_USERNAME'))
+if app.config['MAIL_DEFAULT_SENDER'] is None:
+  app.config['MAIL_DEFAULT_SENDER'] = 'Hermód <{0}>'.format(app.config.get('MAIL_USERNAME'))
 app.logger.setLevel(logging.INFO)
 
 mail = Mail(app)
