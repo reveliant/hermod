@@ -51,3 +51,4 @@ class Config:
     MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', False)
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', None)
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', None)
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', None)
