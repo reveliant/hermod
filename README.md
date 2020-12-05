@@ -65,6 +65,7 @@ Hermód reads its configuration from two sources:
   * `MAIL_USE_SSL`: use SSL / TLS (default False)
   * `MAIL_USERNAME`: username
   * `MAIL_PASSWORD`: password (default None)
+  * `MAIL_DEFAULT_SENDER`: email From field (default "Hermód <`MAIL_UNSERNAME`>")
 
 On Heroku setup, variables are set on first deploy, but you might want to replace generated keys, or set mail settings to your own SMTP server.
 
