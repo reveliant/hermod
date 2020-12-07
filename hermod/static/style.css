@@ -1,105 +1,90 @@
 html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
 }
 
 body {
-  background-color: #fffff0;
-  font-family: Helvetica, Arial, sans;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	background-color: #fffff0;
+	font-family: Arial, Helvetica, sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 h1, h2 {
-  margin: 1rem 0;
-  font-weight: normal;
-  text-decoration: none;
+	margin: 1rem 0;
+	font-weight: normal;
+	text-decoration: none;
 }
 
 #fork-me {
-  position: absolute;
-  top: 0;
-  right: 0;
-  border: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
 }
 
 /* Brand */
-.brand { display: flex; align-items: center; }
+.brand {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	width: 80%;
+	padding-top: 1em;
+}
 .brand img { height: 6rem; }
-.brand h1 { font-size: 2rem; color: #9d9d9d;}
+.brand h1 { font-size: 2rem; color: #9d9d9d; text-align: center; }
 .brand h2 { font-size: 1.6rem; color: #d50; }
 
 /* Page: Hello */
-.hello body {   justify-content: center; }
+.hello body { justify-content: center; }
 .hello .brand { flex-direction: column; }
 .hello .brand img { height: 16rem; }
 
 /* Page: New endpoint */
 form, .form-group {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
+	display: flex;
+	flex-direction: column;
 }
+form { width: 80%; max-width: 640px; margin-bottom: 1em; }
+.form-group {
+	line-height: 1.5;
+	padding-top: .25em;
+	width: 100%;
+}
+.form-label { display: inline-block; }
+.form-control, .btn-block {width: 100%; }
+.form-control, .btn {
+	color: #6d6d6d;
+	border: 1px solid #d5d5d5;
+	border-radius: .25rem;
+	padding: .5em;
+}
+.form-control:focus {
+	border-color: #87cdde;
+	box-shadow: 0 0 0 .2rem rgba(170, 238, 255, .5);
+}
+.form-control { font-family: Arial, Helvetica, sans-serif; }
+.form-check { display: flex; }
+.form-check-input { margin: 0; }
+.form-check-label { margin-left: .25em }
+.btn { min-height: 2.25rem; font-size: 1em; cursor: pointer; }
+.btn-primary { color: #fff; border-color: #c04d00; background-color: #d45500; }
+.btn-primary:hover, .btn-primary:focus { background-color: #c04d00; }
 
 @media screen and (min-width: 500px) {
-  .form-group {
-    flex-direction: row;
-    line-height: 1.5;
-    padding-top: 1.0em;
-    padding-left: 10%;
-    width: 70%;
-  }
-
-  .form-group label {
-    width: 22%;
-  }
-
-  .form-group input {
-    width: 78%;
-  }
-
-  .radio-group {
-    flex-direction: row;
-    line-height: 1.5;
-    padding-top: 1.0em;
-    padding-left: 10%;
-    width: 70%;
-  }
-
-  .radio-group label {
-     width: 30%;
-  }
-  .radio-group input {
-    text-align: left;
-    width: 10%;
-  }
-
-  .text-group {
-    flex-direction: row;
-    padding-top: 1.5em;
-    padding-left: 10%;
-    text-align: center;
-    width: 70%;
-  }
-
-  .text-group textarea {
-    width: 100%;
-  }
-
-  .submit-group {
-    flex-direction: row;
-    line-height: 1.5;
-    padding-top: 1.5em;
-    padding-left: 10%;
-    text-align: center;
-    width: 70%;
-  }
-
-  .submit-group input {
-    width: 100%;
-  }
+	.brand { flex-direction: row; }
+	.form-group  {
+		flex-direction: row;
+		align-items: center;
+		padding-top: 1.0em;
+		width: 100%;
+	}
+	.form-label { width: 22%; }
+	.form-label + .form-control { width: 78%; }
+	.form-check + .form-check { margin-left: 1em; }
 }
 
 /* Error */
@@ -107,24 +92,24 @@ form, .form-group {
 .error .brand { flex-direction: column; }
 .error .brand img { height: 12rem; }
 .error-message {
-  border: 1px solid #d50;
-  border-radius: .5rem;
-  color: #d50;
-  padding: 1rem .75rem .75rem;
-  position: relative;
-  font-size: 1.2rem;
+	border: 1px solid #d50;
+	border-radius: .5rem;
+	color: #d50;
+	padding: 1rem .75rem .75rem;
+	position: relative;
+	font-size: 1.2rem;
 }
 .error-message::before {
-  content: "Error";
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: normal;
-  font-size: .75rem;
-  background: #d50;
-  color: #fff;
-  border-radius: .25rem;
-  padding: .15rem .3rem;
-  position: absolute;
-  top: -.65rem;
-  left: 1rem;
+	content: "Error";
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-weight: normal;
+	font-size: .75rem;
+	background: #d50;
+	color: #fff;
+	border-radius: .25rem;
+	padding: .15rem .3rem;
+	position: absolute;
+	top: -.65rem;
+	left: 1rem;
 }
