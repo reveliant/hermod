@@ -124,6 +124,9 @@ def send_action(cipher_iv, ciphertext, hmac):
     
     if message['address'] is None:
         return render_template('response.html', error='A required field is missing: your email address'), 400
+
+    if '@' not in message['address']:
+        return render_template('response.html', error='A required field is invalid: your email address'), 400
     
     msg = Message('New  message via Hermód')
     msg.add_recipient(address)
