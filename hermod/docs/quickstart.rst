@@ -3,7 +3,6 @@ Quick setup guide
 
 1.  .. image:: https://www.herokucdn.com/deploy/button.svg
         :alt: Deploy on Heroku
-        :align: center
         :target: https://heroku.com/deploy
 
 2.  (Optional) Customize the ``HERMOD_ADMIN_EMAIL`` variable with administrator email address
