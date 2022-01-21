@@ -31,10 +31,10 @@ Quick setup guide
 
 7.  You should now be ready to handle requests.
 
-Command line tools
-------------------
+Command line cheatsheet
+-----------------------
 
-Generate AES and MAC keys:
+If you need to manually generate AES and MAC keys:
 
 .. code-block:: shell
 
