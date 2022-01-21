@@ -34,7 +34,7 @@ Quick setup guide
 Command line tools
 ------------------
 
-Generate AES and MAC keys::
+Generate AES and MAC keys:
 
 .. code-block:: shell
 
