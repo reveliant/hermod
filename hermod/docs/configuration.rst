@@ -94,7 +94,7 @@ Beware that indicated path is relative to the module subdirectory, i.e. a ``herm
 
 The configuration file corresponding to default configuration is provided as reference:
 
-.. code:: ini
+.. code-block:: ini
 
     # Keys are loaded from environment instead of from files
     HERMOD_USE_ENV = False

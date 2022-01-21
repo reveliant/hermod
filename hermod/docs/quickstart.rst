@@ -10,14 +10,14 @@ Quick setup guide
 4.  Go to ``/endpoint`` on your new Hermód instance and fill the form
 5.  Look at application logs (or administrator mails if you set the variable):
 
-    .. code::
+    .. code-block::
 
         Endpoint generated for contact@example.com from example.com:
         http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
 
 6.  Set the generated endpoint adress as target for your form:
 
-    .. code:: html
+    .. code-block:: html
 
         <form
             action="http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ="
