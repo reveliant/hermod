@@ -10,10 +10,14 @@ Quick setup guide
 4.  Go to ``/endpoint`` on your new Hermód instance and fill the form
 5.  Look at application logs (or administrator mails if you set the variable)::
 
+    .. code:: text
+
         Endpoint generated for contact@example.com from example.com:
         http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ=
 
 6.  Set the generated endpoint adress as target for your form::
+
+    .. code:: html
 
         <form
             action="http://your-instance.herokuapp.com/QFnFLdnkPW0=/uc8RDeANub8NoSJfG0mYf3aXlg==/T84ffT6bhuNIag3Pb9rCyrVjKY39Hu5w5i9lu8SgpaQ="
@@ -30,7 +34,9 @@ Quick setup guide
 Command line tools
 ------------------
 
-Generate AES and MAC keys:
+Generate AES and MAC keys::
+
+.. code:: shell
 
     openssl rand -hex 16 | tee aes.key
     openssl rand -hex 16 | tee mac.key
