@@ -92,33 +92,33 @@ Configuration file
 The configuration file is loaded when the ``HERMOD_CONFIG`` environment variable is set.
 Beware that indicated path is relative to the module subdirectory, i.e. a ``hermod.cfg`` configuration file alongside this README file shoud be referenced by ``HERMOD_CONFIG="../hermod.cfg"``.
 
-The configuration file corresponding to default configuration is provided as reference::
+The configuration file corresponding to default configuration is provided as reference:
 
 .. code:: ini
 
-  # Keys are loaded from environment instead of from files
-  HERMOD_USE_ENV = False
+    # Keys are loaded from environment instead of from files
+    HERMOD_USE_ENV = False
 
-  # Key files dictionnary
-  HERMOD_KEYS_AES = 'aes.key'
-  HERMOD_KEYS_MAC = 'mac.key'
+    # Key files dictionnary
+    HERMOD_KEYS_AES = 'aes.key'
+    HERMOD_KEYS_MAC = 'mac.key'
 
-  # Metadata fields names
-  HERMOD_FIELDS_NAME = 'name'
-  HERMOD_FIELDS_FROM = 'from'
-  HERMOD_FIELDS_REDIRECT = 'url'
-  HERMOD_FIELDS_HONEYPOT = 'hermod'
+    # Metadata fields names
+    HERMOD_FIELDS_NAME = 'name'
+    HERMOD_FIELDS_FROM = 'from'
+    HERMOD_FIELDS_REDIRECT = 'url'
+    HERMOD_FIELDS_HONEYPOT = 'hermod'
 
-  # Administrator email
-  HERMOD_ADMIN_EMAIL = None
+    # Administrator email
+    HERMOD_ADMIN_EMAIL = None
 
-  # Allow new endpoint generation
-  HERMOD_NEW_ENDPOINT = True
+    # Allow new endpoint generation
+    HERMOD_NEW_ENDPOINT = True
 
-  # Flask-Mail configuration
-  MAIL_SERVER = '127.0.0.1'
-  MAIL_PORT = 25
-  MAIL_USE_TLS = False
-  MAIL_USE_SSL = False
-  MAIL_USERNAME = None
-  MAIL_PASSWORD = None
+    # Flask-Mail configuration
+    MAIL_SERVER = '127.0.0.1'
+    MAIL_PORT = 25
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = False
+    MAIL_USERNAME = None
+    MAIL_PASSWORD = None
