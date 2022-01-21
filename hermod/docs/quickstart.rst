@@ -36,8 +36,8 @@ Command line tools
 
 Generate AES and MAC keys::
 
-.. code:: shell
+.. code-block:: shell
 
-  openssl rand -hex 16 | tee aes.key
-  openssl rand -hex 16 | tee mac.key
-  chmod go-rwx aes.key mac.key
+    openssl rand -hex 16 | tee aes.key
+    openssl rand -hex 16 | tee mac.key
+    chmod go-rwx aes.key mac.key
