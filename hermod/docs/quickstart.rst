@@ -1,4 +1,5 @@
-# Quick setup guide
+Quick setup guide
+=================
 
 1.  .. image:: https://www.herokucdn.com/deploy/button.svg
         :alt: Deploy on Heroku
