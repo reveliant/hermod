@@ -4,7 +4,7 @@ Quick setup guide
 1.  .. image:: https://www.herokucdn.com/deploy/button.svg
         :alt: Deploy on Heroku
         :align: center
-        :link: https://heroku.com/deploy
+        :target: https://heroku.com/deploy
 
 2.  (Optional) Customize the ``HERMOD_ADMIN_EMAIL`` variable with administrator email address
 3.  Once deployed, set ``MAIL_USERNAME`` and ``MAIL_PASSWORD``variables to the values of ``MAILGUN_SMTP_LOGIN`` and ``MAILGUN_SMTP_PASSWORD``
